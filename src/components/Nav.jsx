@@ -53,10 +53,8 @@ export default function Nav({ theme, onToggleTheme }) {
             className="theme-btn"
             type="button"
             onClick={onToggleTheme}
-            aria-label={
-              theme === 'paper' ? 'Switch to blueprint (dark) theme' : 'Switch to paper (light) theme'
-            }
-            title={theme === 'paper' ? 'Blueprint theme' : 'Paper theme'}
+            aria-label={theme === 'paper' ? 'Switch to dark mode' : 'Switch to light mode'}
+            title={theme === 'paper' ? 'Dark mode' : 'Light mode'}
           >
             {theme === 'paper' ? <MoonIcon /> : <SunIcon />}
           </button>

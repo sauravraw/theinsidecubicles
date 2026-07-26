@@ -12,7 +12,7 @@ export default function Footer() {
           </p>
         </div>
         <nav className="footer-links" aria-label="Footer">
-          <p className="footer-head">On this sheet</p>
+          <p className="footer-head">Happy to help</p>
           {NAV_LINKS.map((link) => (
             <a key={link.href} href={link.href}>
               {link.label}

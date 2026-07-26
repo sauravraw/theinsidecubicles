@@ -9,7 +9,7 @@
   --bg: #f6f5ef;
   --surface: #fbfaf6;
   --ink: #16283c;
-  --muted: #5a6b7c;
+  --muted: var(--ink); /* one constant text color everywhere */
   --line: rgba(22, 40, 60, 0.18);
   --grid: rgba(46, 99, 144, 0.07);
   --grid-major: rgba(46, 99, 144, 0.13);
@@ -20,7 +20,7 @@
   --hatch: rgba(22, 40, 60, 0.45);
   --band-bg: #16283c;
   --band-ink: #f6f5ef;
-  --band-muted: rgba(246, 245, 239, 0.62);
+  --band-muted: var(--band-ink);
 
   color-scheme: light;
 }
@@ -29,7 +29,7 @@
   --bg: #0e2338;
   --surface: #142e47;
   --ink: #e9eff5;
-  --muted: #9db2c5;
+  --muted: var(--ink);
   --line: rgba(233, 239, 245, 0.18);
   --grid: rgba(233, 239, 245, 0.05);
   --grid-major: rgba(233, 239, 245, 0.09);
@@ -40,7 +40,7 @@
   --hatch: rgba(233, 239, 245, 0.5);
   --band-bg: #091a2b;
   --band-ink: #e9eff5;
-  --band-muted: rgba(233, 239, 245, 0.6);
+  --band-muted: var(--band-ink);
 
   color-scheme: dark;
 }
@@ -507,11 +507,6 @@ a {
   border: 1px solid var(--line);
   color: var(--ink);
   transition: color 0.18s ease, border-color 0.18s ease;
-}
-
-.amen-item:hover .amen-symbol {
-  color: var(--accent);
-  border-color: var(--accent);
 }
 
 .amen-symbol svg {
