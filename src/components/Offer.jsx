@@ -8,7 +8,7 @@ export default function Offer() {
   return (
     <section className="offer">
       <Reveal className="offer-inner container">
-        <p className="eyebrow offer-eyebrow">Revision A — Founding members</p>
+        <p className="eyebrow offer-eyebrow">Founding members</p>
         <h2 className="offer-title">
           First {TOTAL_SPOTS} members get <span className="offer-cut">20% off</span> for a year
         </h2>

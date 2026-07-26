@@ -28,7 +28,7 @@ export default function Location() {
   return (
     <section className="section container loc" id="contact">
       <Reveal className="loc-info">
-        <p className="eyebrow">Sheet 04 — Location & contact</p>
+        <p className="eyebrow">Location & contact</p>
         <h2 className="section-title">Find us here</h2>
         <address className="loc-address">
           {CONTACT.address.map((line) => (

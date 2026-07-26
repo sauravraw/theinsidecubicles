@@ -33,7 +33,6 @@ export default function Footer() {
       </div>
       <div className="container footer-base">
         <span>© 2026 The Inside Cubicles</span>
-        <span className="footer-stamp">Drawn to scale · Sheet 05 of 05</span>
       </div>
     </footer>
   )

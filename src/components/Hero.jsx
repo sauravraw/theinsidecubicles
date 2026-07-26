@@ -91,7 +91,7 @@ export default function Hero() {
         <PlanSketch />
       </div>
       <p className="hero-strip">
-        <span>Sheet 01 — The Studio</span>
+        <span>The Studio</span>
         <span>12 desks · 5 rooms</span>
         <span>100 Mbps fibre</span>
         <span>Day 8:00–20:00 · Night 20:00–8:00</span>

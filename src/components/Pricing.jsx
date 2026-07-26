@@ -22,7 +22,7 @@ export default function Pricing() {
   return (
     <section className="section container" id="plans">
       <Reveal className="section-head">
-        <p className="eyebrow">Sheet 03 — Plans & pricing</p>
+        <p className="eyebrow">Plans & pricing</p>
         <h2 className="section-title">Choose your plan</h2>
         <p className="section-sub">
           The studio runs in two shifts — pick yours, then pick a plan. Every plan includes the

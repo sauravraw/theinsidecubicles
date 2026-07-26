@@ -1105,7 +1105,7 @@ a {
 
 .price-note {
   margin-top: 2.25rem;
-  max-width: 64ch;
+  max-width: 102ch;
   font-family: var(--font-mono);
   font-size: 0.74rem;
   line-height: 1.7;
@@ -1205,8 +1205,7 @@ a {
   width: fit-content;
   margin-block: 0.3rem;
   font-size: 0.92rem;
-  text-decoration-style: dotted;
-  text-underline-offset: 3px;
+  text-decoration: none;
 }
 
 .loc-lines a:hover {

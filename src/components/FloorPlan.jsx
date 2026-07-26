@@ -33,7 +33,7 @@ export default function FloorPlan() {
     <section className="section fp" id="seats">
       <div className="container">
         <Reveal className="section-head">
-          <p className="eyebrow">Sheet 02 — Seat availability</p>
+          <p className="eyebrow">Seat availability</p>
           <h2 className="section-title">Pick your spot on the plan</h2>
           <p className="section-sub">
             {openCount} desks open this week. Tap any desk to see which plans it belongs to —

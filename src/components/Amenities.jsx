@@ -62,7 +62,7 @@ export default function Amenities() {
   return (
     <section className="section container" id="amenities">
       <Reveal className="section-head">
-        <p className="eyebrow">Legend — What every plan includes</p>
+        <p className="eyebrow">What every plan includes</p>
         <h2 className="section-title">Everything you need, nothing you'd bill for</h2>
       </Reveal>
       <div className="amen-grid">
