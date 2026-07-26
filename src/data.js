@@ -205,7 +205,7 @@ export const CONTACT = {
   ],
   phone: '+91 79774 48516',
   whatsapp: 'https://wa.me/917977448516',
-  email: 'hello@theinsidecubicles.com',
+  email: 'theinsidecubicles@gmail.com',
   coords: '19.4682917,72.8045583',
   hours: [
     { days: 'Day shift', time: '8:00 – 20:00 · all week' },

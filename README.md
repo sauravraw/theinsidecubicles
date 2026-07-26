@@ -19,8 +19,7 @@ npm run preview  # serve the production build
 ## Where things live
 
 - `src/data.js` — all the content: nav links, amenities, shifts, pricing plans,
-  testimonials, desk inventory for the floor plan, and contact details (`CONTACT` —
-  the email address is still a placeholder).
+  testimonials, desk inventory for the floor plan, and contact details (`CONTACT`).
 
   Pricing runs in two shifts (`SHIFTS`: day 8:00–20:00, night 20:00–8:00) with a
   Day/Night switcher in the pricing section. Any plan field (`price`, `name`, `per`,
