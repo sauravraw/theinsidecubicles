@@ -126,7 +126,7 @@ a {
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--draft);
+  color: var(--ink);
 }
 
 .eyebrow::before {
@@ -224,7 +224,7 @@ a {
   font-family: var(--font-mono);
   font-size: 10.5px;
   letter-spacing: 0.09em;
-  fill: var(--draft);
+  fill: var(--ink);
 }
 
 .plan-note.is-accent {
@@ -640,7 +640,7 @@ a {
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--draft);
+  color: var(--ink);
 }
 
 .about-specs dl {
@@ -869,7 +869,7 @@ a {
 }
 
 .fp-panel-hint {
-  color: var(--draft);
+  color: var(--ink);
 }
 
 .fp-panel-plan {
@@ -1130,7 +1130,7 @@ a {
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--draft);
+  color: var(--ink);
 }
 
 .quote-card blockquote {
@@ -1236,7 +1236,7 @@ a {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   text-decoration: none;
-  color: var(--draft);
+  color: var(--ink);
 }
 
 .loc-directions:hover {
