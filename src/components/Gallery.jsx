@@ -81,8 +81,7 @@ export default function Gallery() {
         <p className="eyebrow">The space</p>
         <h2 className="section-title">Explore the studio</h2>
         <p className="section-sub">
-          Designed for focus first, conversation second. Come see it in person — the drawings don't
-          do the coffee justice.
+        Work, relax, and enjoy great coffee. Visit us—our pictures don't do it justice.
         </p>
       </Reveal>
       <div className="gallery-grid">
