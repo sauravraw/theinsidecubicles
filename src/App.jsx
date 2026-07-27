@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Ticker from './components/Ticker.jsx'
 import Nav from './components/Nav.jsx'
 import Hero from './components/Hero.jsx'
 import Amenities from './components/Amenities.jsx'
@@ -27,14 +28,15 @@ export default function App() {
 
   return (
     <>
+      <Ticker />
       <Nav theme={theme} onToggleTheme={() => setTheme(theme === 'paper' ? 'blueprint' : 'paper')} />
       <main>
         <Hero />
         <Amenities />
-        <Offer />
         {/* <About /> — hidden for now; uncomment (and the import above) to bring it back */}
         <Gallery />
         <FloorPlan />
+        <Offer />
         <Pricing />
         {/* <Testimonials /> — hidden for now; uncomment (and the import above) to bring it back */}
         <Location />

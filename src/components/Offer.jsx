@@ -1,12 +1,12 @@
 import Reveal from './Reveal.jsx'
-import { CONTACT } from '../data.js'
+import { CONTACT, OFFER } from '../data.js'
 
-const TOTAL_SPOTS = 20
-const SPOTS_TAKEN = 7
+const TOTAL_SPOTS = OFFER.totalSpots
+const SPOTS_TAKEN = OFFER.spotsTaken
 
 export default function Offer() {
   return (
-    <section className="offer">
+    <section className="offer" id="offer">
       <Reveal className="offer-inner container">
         <p className="eyebrow offer-eyebrow">Founding members</p>
         <h2 className="offer-title">

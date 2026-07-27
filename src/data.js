@@ -6,6 +6,11 @@ export const NAV_LINKS = [
   { label: 'Contact', href: '#contact' },
 ]
 
+export const OFFER = {
+  totalSpots: 20,
+  spotsTaken: 7,
+}
+
 export const AMENITIES = [
   {
     symbol: 'fibre',
@@ -207,6 +212,8 @@ export const CONTACT = {
   whatsapp: 'https://wa.me/917977448516',
   email: 'theinsidecubicles@gmail.com',
   coords: '19.4682917,72.8045583',
+  enquiryForm: 'https://forms.gle/4LL7u88AMhHYaeX1A',
+  nearby: ['Pizza Hut', "McDonald's", 'cafés & street food'],
   hours: [
     { days: 'Day shift', time: '8:00 – 20:00 · all week' },
     { days: 'Night shift', time: '20:00 – 8:00 · Mon – Sat' },

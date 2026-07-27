@@ -43,13 +43,19 @@ export default function Location() {
             </div>
           ))}
         </dl>
+        <div className="loc-nearby">
+          <p className="loc-nearby-head">Food nearby</p>
+          <p className="loc-nearby-list">
+            {CONTACT.nearby.join(' · ')} — all a short walk from the door.
+          </p>
+        </div>
         <p className="loc-lines">
           <a href={`tel:${CONTACT.phone.replace(/ /g, '')}`}>{CONTACT.phone}</a>
           <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
         </p>
         <div className="loc-ctas">
-          <a className="btn btn-primary" href={`mailto:${CONTACT.email}?subject=Free%20tour%20of%20The%20Inside%20Cubicles`}>
-            Book a free tour
+          <a className="btn btn-primary" href={CONTACT.enquiryForm} target="_blank" rel="noreferrer">
+            Enquire now
           </a>
           <a className="btn btn-ghost" href={CONTACT.whatsapp} target="_blank" rel="noreferrer">
             WhatsApp us

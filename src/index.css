@@ -231,6 +231,54 @@ a {
   fill: var(--accent);
 }
 
+/* ---------------------------------------------------------------- offer ticker */
+
+.ticker {
+  display: block;
+  overflow: hidden;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  text-decoration: none;
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll 30s linear infinite;
+}
+
+.ticker:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+.ticker-group {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  padding-block: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ticker-item {
+  margin-right: 1.3rem;
+}
+
+.ticker-item::after {
+  content: '•';
+  margin-left: 1.3rem;
+  opacity: 0.65;
+}
+
+@keyframes ticker-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 /* ---------------------------------------------------------------- nav */
 
 /* The header sits on the same fixed navy band as the footer, in both themes. */
@@ -1191,6 +1239,24 @@ a {
   color: var(--muted);
 }
 
+.loc-nearby {
+  margin-top: 1.3rem;
+}
+
+.loc-nearby-head {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.loc-nearby-list {
+  margin-top: 0.3rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
 .loc-lines {
   margin-top: 1.3rem;
 }
@@ -1418,6 +1484,10 @@ a {
   }
 
   .desk-yours {
+    animation: none;
+  }
+
+  .ticker-track {
     animation: none;
   }
 

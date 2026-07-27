@@ -1,3 +1,5 @@
+import { CONTACT } from '../data.js'
+
 function PlanSketch() {
   return (
     <svg
@@ -79,8 +81,8 @@ export default function Hero() {
           and a desk that's yours from the minute you sit down.
         </p>
         <div className="hero-ctas">
-          <a className="btn btn-primary" href="#contact">
-            Get a free day pass
+          <a className="btn btn-primary" href={CONTACT.enquiryForm} target="_blank" rel="noreferrer">
+            Enquire now
           </a>
           <a className="btn btn-ghost" href="#plans">
             See the plans

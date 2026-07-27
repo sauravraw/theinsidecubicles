@@ -26,9 +26,11 @@ export default function Footer() {
           <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer">
             WhatsApp
           </a>
+          {/* Instagram — enable when the account is ready
           <a href="https://instagram.com" target="_blank" rel="noreferrer">
             Instagram
           </a>
+          */}
         </div>
       </div>
       <div className="container footer-base">
