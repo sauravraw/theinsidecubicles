@@ -43,11 +43,6 @@ export const AMENITIES = [
     note: 'CCTV, and lockers that actually lock.',
   },
   {
-    symbol: 'print',
-    title: 'Print & scan',
-    note: 'A4 and A3 laser printing and scanning, charged at cost.',
-  },
-  {
     symbol: 'community',
     title: 'Community',
     note: 'Fifty-odd regulars, monthly demo nights, zero forced fun.',
@@ -82,7 +77,7 @@ export const PLANS = [
     price: { day: 100, night: 150 },
     per: 'one sitting',
     tagline: 'A trial sitting — see if the chair fits.',
-    features: ['Any open desk', 'Fibre Wi-Fi', 'Coffee & chai included'],
+    features: ['Any open desk', 'Fibre Wi-Fi', 'Coffee & chai included', 'Weekends included'],
   },
   {
     id: 'day-pass',
@@ -90,18 +85,18 @@ export const PLANS = [
     price: { day: 350, night: 500 },
     per: { day: 'per day', night: 'per night' },
     tagline: { day: 'A full day, 8am to 8pm.', night: 'Dusk till dawn, 8pm to 8am.' },
-    features: ['Any open desk', 'Fibre Wi-Fi', 'Coffee & chai included', 'Lounge access'],
+    features: ['Any open desk', 'Fibre Wi-Fi', 'Coffee & chai included', 'Weekends included'],
   },
   {
     id: 'weekly',
     name: 'Weekly',
     price: { day: 1400, night: 2000 },
-    per: 'Mon–Fri',
+    per: 'per week',
     tagline: {
-      day: 'Five working days on the open floor.',
-      night: 'Five nights on the open floor.',
+      day: 'A full week on the open floor.',
+      night: 'A week of nights on the open floor.',
     },
-    features: ['Any open desk', 'Fibre Wi-Fi', 'Coffee & chai included', 'Phone booth access'],
+    features: ['Any open desk', 'Fibre Wi-Fi', 'Phone booth access', 'Weekends included'],
   },
   {
     id: 'monthly',
@@ -114,7 +109,7 @@ export const PLANS = [
       'Dedicated desk + locker',
       'Wired fibre port',
       '2 meeting-room hours',
-      'Coffee & chai included',
+      'Weekends included',
     ],
   },
   {
@@ -127,7 +122,7 @@ export const PLANS = [
       '2 dedicated desks + lockers',
       '4 meeting-room hours',
       'Wired fibre ports',
-      'Coffee & chai included',
+      'Weekends included',
     ],
   },
   {
@@ -140,7 +135,7 @@ export const PLANS = [
       '4 dedicated desks + lockers',
       '8 meeting-room hours',
       'Storage shelf',
-      'Coffee & chai included',
+      'Weekends included',
     ],
   },
 ]

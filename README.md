@@ -31,6 +31,28 @@ npm run preview  # serve the production build
 - `src/index.css` — the whole design system. Colors and fonts are CSS custom properties
   in the `:root` / `[data-theme='blueprint']` blocks at the top.
 
+## Office (hidden document generator)
+
+`/office` is a hidden route (not linked anywhere, `noindex`) that generates customer
+PDFs — Invoice, or Service Agreement + Invoice — with a form on the left and a live
+preview on the right. "Download PDF" uses the browser print dialog (choose "Save as
+PDF"). Drafts save to the browser via "Save draft".
+
+On Vercel the route is protected by HTTP Basic Auth (`middleware.js`): set the
+environment variables `OFFICE_USER` and `OFFICE_PASS` in the Vercel dashboard and
+redeploy. Until they are set, `/office` returns 401 for everyone. On local dev the
+route is open (middleware only runs on Vercel).
+
+GST defaults to "not charged — registration in process"; switch the GST dropdown to
+SGST+CGST or IGST and fill "Our GSTIN" once registration arrives. Agreement terms
+live in `src/office/terms.js` — have them reviewed by a legal professional.
+
+Every downloaded document can auto-log to a Google Sheet via `api/invoice-log.js`
+(a Vercel serverless function) + a Google Apps Script attached to the sheet. Set
+`SHEETS_WEBAPP_URL` and `SHEETS_SECRET` env vars in Vercel; until then the office
+tool works fine and simply shows "Sheet logging not set up yet". The sheet also
+drives the suggested next invoice number.
+
 ## Updating seat availability
 
 Desk statuses (`open` / `taken` / `reserved`) live in `src/data.js` in the

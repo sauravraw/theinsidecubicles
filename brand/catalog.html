@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>The Inside Cubicles — Price Catalog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #16283c;
+    --muted: #43536a;
+    --accent: #e4572e;
+    --on-accent: #fff;
+    --draft: #2e6390;
+    --paper: #fdfcf9;
+    --surface: #fff;
+    --band: #16283c;
+    --band-ink: #fdfcf9;
+    --line: rgba(22, 40, 60, 0.35);
+    --grid: rgba(46, 99, 144, 0.06);
+  }
+
+  /* night catalog uses the site's dark (blueprint) palette */
+  body.night {
+    --ink: #e9eff5;
+    --muted: #9db2c5;
+    --accent: #ff7a4d;
+    --on-accent: #091a2b;
+    --draft: #8fc4ec;
+    --paper: #0e2338;
+    --surface: #142e47;
+    --band: #091a2b;
+    --band-ink: #e9eff5;
+    --line: rgba(233, 239, 245, 0.35);
+    --grid: rgba(233, 239, 245, 0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+
+  @page { size: A4; margin: 0; }
+
+  html, body { width: 210mm; height: 297mm; }
+
+  body {
+    font-family: 'Public Sans', sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* drawing-sheet frame */
+  .sheet {
+    position: absolute;
+    inset: 7mm;
+    border: 0.7mm solid var(--ink);
+    padding: 4mm 7mm 5mm;
+    background-image:
+      linear-gradient(var(--grid) 0.3mm, transparent 0.3mm),
+      linear-gradient(90deg, var(--grid) 0.3mm, transparent 0.3mm);
+    background-size: 7mm 7mm;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sheet::before {
+    content: '';
+    position: absolute;
+    inset: 1.6mm;
+    border: 0.2mm solid var(--ink);
+    pointer-events: none;
+  }
+
+  /* header */
+  .brand-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 2.2mm;
+    border-bottom: 0.6mm solid var(--accent);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 2.2mm;
+    font-family: 'Big Shoulders', sans-serif;
+    font-weight: 700;
+    font-size: 13pt;
+    letter-spacing: 0.05em;
+  }
+
+  .brand svg { width: 6.4mm; height: 6.4mm; }
+  .brand svg rect { stroke: var(--ink); }
+  .brand svg rect:first-child { fill: var(--accent); stroke: none; }
+
+  .head { text-align: center; margin-top: 3mm; }
+
+  .head h1 {
+    font-family: 'Big Shoulders', sans-serif;
+    font-weight: 800;
+    font-size: 29pt;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .head .addr { margin-top: 1.8mm; font-size: 9.2pt; }
+
+  .head .contact {
+    margin-top: 1mm;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8.2pt;
+    letter-spacing: 0.04em;
+  }
+
+  .shift-banner {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-top: 3mm;
+    padding: 1.8mm 3.5mm;
+    background: var(--band);
+    color: var(--band-ink);
+  }
+
+  .shift-banner .name {
+    font-family: 'Big Shoulders', sans-serif;
+    font-weight: 700;
+    font-size: 16.5pt;
+    letter-spacing: 0.08em;
+  }
+
+  .shift-banner .name b { color: var(--accent); }
+
+  .shift-banner .time {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9pt;
+    letter-spacing: 0.12em;
+  }
+
+  /* plans grid */
+  .plans {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 1fr;
+    gap: 2.6mm;
+    margin-top: 3mm;
+  }
+
+  .plan {
+    position: relative;
+    border: 0.35mm solid var(--line);
+    background: var(--surface);
+    padding: 3.2mm 4mm;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .plan.popular { border: 0.6mm solid var(--accent); }
+
+  .plan .tag-pop {
+    position: absolute;
+    top: -2.4mm;
+    right: 3mm;
+    padding: 0.6mm 2mm;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 7.5pt;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+  }
+
+  .plan h2 {
+    font-family: 'Big Shoulders', sans-serif;
+    font-weight: 800;
+    font-size: 19.5pt;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .plan .tagline { margin-top: 0.7mm; font-size: 8.6pt; color: var(--muted); }
+
+  .plan .price {
+    margin-top: 2mm;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 24pt;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  .plan .per {
+    font-size: 8.2pt;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .plan .gst {
+    margin-top: 1.4mm;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8.4pt;
+    color: var(--muted);
+  }
+
+  .plan .gst b { color: var(--ink); }
+
+  .plan ul { margin-top: 2mm; padding: 0; list-style: none; }
+
+  .plan li {
+    position: relative;
+    padding-left: 4.6mm;
+    font-size: 8.8pt;
+    line-height: 1.55;
+  }
+
+  .plan li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 1.4mm;
+    width: 2mm;
+    height: 2mm;
+    border: 0.35mm solid var(--accent);
+  }
+
+  /* offer + includes + footer */
+  .offer {
+    margin-top: 3mm;
+    padding: 1.8mm 3.5mm;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8.4pt;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-align: center;
+  }
+
+  .includes {
+    margin-top: 2.5mm;
+    padding: 2mm 3.5mm;
+    border: 0.35mm solid var(--line);
+    background: var(--surface);
+    font-size: 8.4pt;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  .includes b {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8pt;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--draft);
+    margin-right: 2mm;
+  }
+
+  footer {
+    margin-top: 2.5mm;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8pt;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <div class="brand-row">
+      <div class="brand">
+        <svg viewBox="0 0 32 32"><rect x="2" y="2" width="13" height="13" fill="#e4572e"/><rect x="17" y="2" width="13" height="13" fill="none" stroke="#16283c" stroke-width="2"/><rect x="2" y="17" width="13" height="13" fill="none" stroke="#16283c" stroke-width="2"/><rect x="17" y="17" width="13" height="13" fill="none" stroke="#16283c" stroke-width="2"/></svg>
+        THE INSIDE CUBICLES
+      </div>
+    </div>
+
+    <div class="head">
+      <h1>The Inside Cubicles</h1>
+      <p class="addr">F44, First Floor, Cosmos Square, Rustomjee Global City, HDIL, Vasai-Virar, Maharashtra 401303</p>
+      <p class="contact">+91 79774 48516 · theinsidecubicles@gmail.com · www.theinsidecubicles.com</p>
+    </div>
+
+    <div class="shift-banner">
+      <span class="name" id="shift-name"></span>
+      <span class="time" id="shift-time"></span>
+    </div>
+
+    <main class="plans" id="plans"></main>
+
+    <div class="offer">FOUNDING OFFER — FIRST 20 MEMBERS GET <b>20% OFF</b> FOR A YEAR · ASK US TO CLAIM A SPOT</div>
+
+    <div class="includes">
+      <b>EVERY PLAN INCLUDES</b>
+      100 Mbps fibre + 50 Mbps backup · Unlimited coffee &amp; chai · 2 conference rooms · Private meeting room ·
+      Power backup · Ergonomic chairs · CCTV &amp; lockers · Community
+    </div>
+
+    <footer>
+      <span>WHATSAPP +91 79774 48516 — WE ANSWER FAST</span>
+      <span id="sheet-of"></span>
+    </footer>
+  </div>
+
+<script>
+  const FEAT_OPEN = ['Any open desk', 'Fibre Wi-Fi', 'Coffee & chai included', 'Weekends included']
+  const DATA = {
+    day: {
+      of: 'DAY SHIFT TARIFF',
+      name: 'DAY <b>SHIFT</b>', time: '8:00 – 20:00 · ALL WEEK',
+      plans: [
+        { name: 'Two Hours', tag: 'A trial sitting — see if the chair fits.', base: 85, final: 100, per: 'one sitting', features: FEAT_OPEN },
+        { name: 'Day Pass', tag: 'A full day, 8am to 8pm.', base: 297, final: 350, per: 'per day', features: FEAT_OPEN },
+        { name: 'Weekly', tag: 'A full week on the open floor.', base: 1186, final: 1400, per: 'per week', features: ['Any open desk', 'Fibre Wi-Fi', 'Phone booth access', 'Weekends included'] },
+        { name: 'Monthly', tag: 'Your own desk, your own drawer.', base: 3390, final: 4000, per: '30 days', popular: true, features: ['Dedicated desk + locker', 'Wired fibre port', '2 meeting-room hours', 'Weekends included'] },
+        { name: 'Team of 2', tag: 'Two dedicated desks, side by side.', base: 6356, final: 7500, per: '30 days', features: ['2 dedicated desks + lockers', '4 meeting-room hours', 'Wired fibre ports', 'Weekends included'] },
+        { name: 'Team of 4', tag: 'A corner of the studio that is yours.', base: 11864, final: 14000, per: '30 days', features: ['4 dedicated desks + lockers', '8 meeting-room hours', 'Storage shelf', 'Weekends included'] },
+      ],
+    },
+    night: {
+      of: 'NIGHT SHIFT TARIFF',
+      name: 'NIGHT <b>SHIFT</b>', time: '20:00 – 8:00 · MON – SAT',
+      plans: [
+        { name: 'Two Hours', tag: 'A trial sitting — see if the chair fits.', base: 127, final: 150, per: 'one sitting', features: FEAT_OPEN },
+        { name: 'Night Pass', tag: 'Dusk till dawn, 8pm to 8am.', base: 424, final: 500, per: 'per night', features: FEAT_OPEN },
+        { name: 'Weekly', tag: 'A week of nights on the open floor.', base: 1695, final: 2000, per: 'per week', features: ['Any open desk', 'Fibre Wi-Fi', 'Phone booth access', 'Weekends included'] },
+        { name: 'Monthly', tag: 'Your own desk, after dark.', base: 5085, final: 6000, per: '30 days', popular: true, features: ['Dedicated desk + locker', 'Wired fibre port', '2 meeting-room hours', 'Weekends included'] },
+        { name: 'Team of 2', tag: 'Two dedicated desks, side by side.', base: 9322, final: 11000, per: '30 days', features: ['2 dedicated desks + lockers', '4 meeting-room hours', 'Wired fibre ports', 'Weekends included'] },
+        { name: 'Team of 4', tag: 'A corner of the studio that is yours.', base: 18644, final: 22000, per: '30 days', features: ['4 dedicated desks + lockers', '8 meeting-room hours', 'Storage shelf', 'Weekends included'] },
+      ],
+    },
+  }
+
+  const shift = new URLSearchParams(location.search).get('shift') === 'night' ? 'night' : 'day'
+  const d = DATA[shift]
+  const inr = (n) => n.toLocaleString('en-IN')
+
+  document.body.classList.add('night') // both catalogs use the dark palette
+  document.getElementById('sheet-of').textContent = d.of
+  document.getElementById('shift-name').innerHTML = d.name
+  document.getElementById('shift-time').textContent = d.time
+
+  document.getElementById('plans').innerHTML = d.plans
+    .map(
+      (p) => `
+    <div class="plan${p.popular ? ' popular' : ''}">
+      ${p.popular ? '<span class="tag-pop">MOST PICKED</span>' : ''}
+      <h2>${p.name}</h2>
+      <p class="tagline">${p.tag}</p>
+      <p class="price">₹${inr(p.final)} <span class="per">/ ${p.per}</span></p>
+      <p class="gst">₹${inr(p.base)} + 18% GST</p>
+      <ul>${p.features.map((f) => `<li>${f}</li>`).join('')}</ul>
+    </div>`,
+    )
+    .join('')
+</script>
+</body>
+</html>

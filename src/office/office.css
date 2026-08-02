@@ -1,0 +1,522 @@
+/* ---------- Office (hidden admin) — screen ---------- */
+
+body.office-mode {
+  background-image: none;
+  background-color: #eceae2;
+}
+
+.office {
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: #16283c;
+}
+
+.office-top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.8rem 1.5rem;
+  background: #16283c;
+  color: #f6f5ef;
+}
+
+.office-brand {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.office-hint {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.office-btn {
+  padding: 0.5em 1em;
+  border: 1px solid rgba(22, 40, 60, 0.35);
+  background: #fff;
+  color: #16283c;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.office-btn.primary {
+  margin-left: auto;
+  background: #e4572e;
+  border-color: #e4572e;
+  color: #fff;
+}
+
+.office-body {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* ---------- form ---------- */
+
+.office-form fieldset {
+  margin: 0 0 1.25rem;
+  padding: 1rem 1.25rem 1.25rem;
+  border: 1px solid rgba(22, 40, 60, 0.25);
+  background: #fff;
+}
+
+.office-form legend {
+  padding: 0 0.5em;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.office-form label {
+  display: block;
+  margin-top: 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.office-form input,
+.office-form select,
+.office-form textarea {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.45em 0.6em;
+  border: 1px solid rgba(22, 40, 60, 0.3);
+  font: inherit;
+  font-weight: 400;
+  background: #fdfcf9;
+}
+
+.office-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px dashed rgba(22, 40, 60, 0.2);
+}
+
+.office-item label {
+  margin-top: 0;
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.office-item .if-plan {
+  flex: 1 1 220px;
+}
+
+.office-item .if-sm {
+  width: 76px;
+  flex: none;
+}
+
+.office-item .if-md {
+  width: 130px;
+  flex: none;
+}
+
+.office-item .if-remove {
+  height: 34px;
+}
+
+.office-total {
+  margin-top: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.office-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.office-drafts {
+  margin: 0.8rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.office-drafts li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.office-link {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.82rem;
+  color: #2e6390;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---------- preview drawer ---------- */
+
+.office-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+
+.office-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(9, 26, 43, 0.55);
+}
+
+.office-drawer-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(820px, 96vw);
+  display: flex;
+  flex-direction: column;
+  background: #eceae2;
+  box-shadow: -10px 0 32px rgba(9, 26, 43, 0.35);
+  animation: drawer-in 0.22s ease;
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+}
+
+.office-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 1.1rem;
+  background: #16283c;
+  color: #f6f5ef;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.office-drawer-body {
+  flex: 1;
+  overflow: auto;
+  padding: 1.2rem;
+}
+
+.office-drawer-foot {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0.9rem 1.1rem;
+  background: #fff;
+  border-top: 1px solid rgba(22, 40, 60, 0.25);
+}
+
+.office-confirm {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  flex: 1;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+.office-confirm input {
+  width: 16px;
+  height: 16px;
+  margin-top: 0.1rem;
+  flex: none;
+  accent-color: #e4572e;
+}
+
+.office-btn.primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---------- the document ---------- */
+
+.doc {
+  width: 210mm;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 16mm 15mm;
+  background: #fff;
+  box-shadow: 0 2px 20px rgba(22, 40, 60, 0.18);
+  color: #16283c;
+  font-size: 10.5pt;
+  line-height: 1.5;
+}
+
+.doc-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e4572e;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.doc-brand svg {
+  width: 18px;
+  height: 18px;
+}
+
+.doc-company {
+  margin-top: 1.4rem;
+  text-align: center;
+}
+
+.doc-company h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.doc-company p {
+  margin: 0.15rem 0 0;
+  font-size: 9.5pt;
+}
+
+.doc-gstin {
+  font-family: var(--font-mono);
+  font-size: 8.5pt;
+  letter-spacing: 0.04em;
+}
+
+.doc-title {
+  margin: 1.4rem 0 1rem;
+  padding: 0.5rem 0;
+  border-top: 1.5px solid #16283c;
+  border-bottom: 1.5px solid #16283c;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.doc-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 9.5pt;
+}
+
+.doc-section {
+  margin: 1.3rem 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9.5pt;
+}
+
+.doc-table th {
+  background: #16283c;
+  color: #f6f5ef;
+  text-align: left;
+  padding: 0.45em 0.7em;
+  font-weight: 600;
+}
+
+.doc-table td {
+  border: 1px solid rgba(22, 40, 60, 0.35);
+  padding: 0.45em 0.7em;
+  vertical-align: top;
+}
+
+.doc-table .num {
+  text-align: right;
+  font-family: var(--font-mono);
+}
+
+.doc-table .total-row td {
+  font-weight: 600;
+  background: #f1efe8;
+}
+
+.doc-table .grand td {
+  background: #16283c;
+  color: #f6f5ef;
+}
+
+.pre-line {
+  white-space: pre-line;
+}
+
+.doc-note {
+  margin: 0.5rem 0 0;
+  font-size: 8.5pt;
+}
+
+.doc-terms p,
+.doc-terms li {
+  font-size: 9.5pt;
+}
+
+.doc-terms ul {
+  margin: 0.3rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.doc-signs {
+  display: flex;
+  gap: 3rem;
+  margin-top: 2.2rem;
+  break-inside: avoid;
+}
+
+.doc-signs > div {
+  flex: 1;
+}
+
+.doc-signs h3 {
+  margin: 0 0 1rem;
+  font-size: 10pt;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #16283c;
+  padding-bottom: 0.3rem;
+}
+
+.sign-line {
+  margin: 0 0 2.2rem;
+  font-weight: 600;
+}
+
+.sign-rule {
+  border-bottom: 1px solid #16283c;
+  margin-bottom: 0.4rem;
+}
+
+.doc-signs p {
+  margin: 0.15rem 0;
+  font-size: 9.5pt;
+}
+
+.doc-footer {
+  margin-top: 2.5rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid #e4572e;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 7.5pt;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 980px) {
+  .office-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- print: only the document ---------- */
+
+@page {
+  size: A4;
+  margin: 12mm;
+}
+
+@media print {
+  body.office-mode {
+    background: #fff;
+  }
+
+  .office-top,
+  .office-form,
+  .office-body,
+  .office-drawer-head,
+  .office-drawer-foot,
+  .office-drawer-backdrop {
+    display: none !important;
+  }
+
+  .office-drawer {
+    position: static;
+  }
+
+  .office-drawer-panel {
+    position: static;
+    display: block;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    background: #fff;
+    box-shadow: none;
+    animation: none;
+  }
+
+  .office-drawer-body {
+    overflow: visible;
+    padding: 0;
+  }
+
+  .doc {
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    font-size: 10pt;
+  }
+
+  .page-break {
+    break-before: page;
+  }
+
+  .doc-table th {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .doc-table .grand td,
+  .doc-table .total-row td {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
