@@ -88,6 +88,10 @@ body.office-mode {
   font-weight: 600;
 }
 
+.office-form input[type='date'] {
+  cursor: pointer;
+}
+
 .office-form input,
 .office-form select,
 .office-form textarea {

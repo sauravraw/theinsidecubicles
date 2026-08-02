@@ -9,36 +9,53 @@ const todayISO = `${today.getFullYear()}-${mm}-${dd}`
 
 const DRAFTS_KEY = 'tic-office-drafts'
 
-// Plan catalogue — picking one fills description, price, and duration (all editable after).
-export const CATALOG = [
-  { label: 'Two hours — day shift', price: 100, duration: 'one sitting' },
-  { label: 'Day pass', price: 350, duration: 'per day' },
-  { label: 'Weekly desk — day shift', price: 1400, duration: 'Mon–Fri' },
-  { label: 'Monthly desk — day shift', price: 4000, duration: '30 days' },
-  { label: 'Team of 2 — day shift', price: 7500, duration: '30 days' },
-  { label: 'Team of 4 — day shift', price: 14000, duration: '30 days' },
-  { label: 'Two hours — night shift', price: 150, duration: 'one sitting' },
-  { label: 'Night pass', price: 500, duration: 'per night' },
-  { label: 'Weekly desk — night shift', price: 2000, duration: 'Mon–Fri' },
-  { label: 'Monthly desk — night shift', price: 6000, duration: '30 days' },
-  { label: 'Team of 2 — night shift', price: 11000, duration: '30 days' },
-  { label: 'Team of 4 — night shift', price: 22000, duration: '30 days' },
-  { label: 'Conference room C-01 (4 seats)', price: 0, duration: 'per hour' },
-  { label: 'Conference room C-02 (2 seats)', price: 0, duration: 'per hour' },
-  { label: 'Meeting room M-01', price: 0, duration: 'per hour' },
+// Plan catalogue — picking one fills description, price, and duration (all editable
+// after). Conference prices: ₹6,000/person (day) · ₹7,000/person (night), per 30 days,
+// already inclusive of 18% GST.
+export const CATALOG_GROUPS = [
+  {
+    group: 'Day shift',
+    items: [
+      { label: 'Two hours — day shift', price: 100, duration: 'one sitting' },
+      { label: 'Day pass', price: 350, duration: 'per day' },
+      { label: 'Weekly desk — day shift', price: 1400, duration: 'per week' },
+      { label: 'Monthly desk — day shift', price: 4000, duration: '30 days' },
+      { label: 'Conference room — 1 person (day)', price: 6000, duration: '30 days' },
+      { label: 'Conference room — 2 people (day)', price: 12000, duration: '30 days' },
+      { label: 'Conference room — 3 people (day)', price: 18000, duration: '30 days' },
+      { label: 'Conference room — 4 people (day)', price: 24000, duration: '30 days' },
+    ],
+  },
+  {
+    group: 'Night shift',
+    items: [
+      { label: 'Two hours — night shift', price: 150, duration: 'one sitting' },
+      { label: 'Night pass', price: 500, duration: 'per night' },
+      { label: 'Weekly desk — night shift', price: 2000, duration: 'per week' },
+      { label: 'Monthly desk — night shift', price: 6000, duration: '30 days' },
+      { label: 'Conference room — 1 person (night)', price: 7000, duration: '30 days' },
+      { label: 'Conference room — 2 people (night)', price: 14000, duration: '30 days' },
+      { label: 'Conference room — 3 people (night)', price: 21000, duration: '30 days' },
+      { label: 'Conference room — 4 people (night)', price: 28000, duration: '30 days' },
+    ],
+  },
 ]
+
+export const CATALOG = CATALOG_GROUPS.flatMap((g) => g.items)
 
 const CUSTOM = '__custom'
 
 function blankItem() {
-  const first = CATALOG[3] // Monthly desk — day shift
+  const first = CATALOG.find((p) => p.label === 'Monthly desk — day shift')
   return { desc: first.label, qty: 1, unitPrice: first.price, periods: 1, duration: first.duration }
 }
+
+const DOC_PREFIX = { invoice: 'TICI', agreement: 'TICSA', service: 'TICS' }
 
 function initialState(docType = 'invoice') {
   return {
     docType,
-    docNo: `${docType === 'agreement' ? 'TICSA' : 'TICI'}-${dd}${mm}A1`,
+    docNo: `${DOC_PREFIX[docType]}-${dd}${mm}A1`,
     date: todayISO,
     startDate: todayISO,
     endDate: '',
@@ -73,8 +90,8 @@ function loadDrafts() {
 
 // 'TICI-2807A3' → 'TICI-2807A4' when the last number is from today; else A1 for today.
 function nextDocNo(lastDocNo, docType) {
-  const prefix = docType === 'agreement' ? 'TICSA' : 'TICI'
-  const m = /^TIC(?:SA|I)-(\d{4})A(\d+)$/.exec(lastDocNo || '')
+  const prefix = DOC_PREFIX[docType]
+  const m = /^TIC(?:SA|S|I)-(\d{4})A(\d+)$/.exec(lastDocNo || '')
   if (m && m[1] === `${dd}${mm}`) return `${prefix}-${dd}${mm}A${Number(m[2]) + 1}`
   return `${prefix}-${dd}${mm}A1`
 }
@@ -170,8 +187,33 @@ export default function OfficeApp() {
     setState((s) => ({
       ...s,
       docType,
-      docNo: s.docNo.replace(/^TIC(SA|I)/, docType === 'agreement' ? 'TICSA' : 'TICI'),
+      docNo: s.docNo.replace(/^TIC(SA|S|I)/, DOC_PREFIX[docType]),
     }))
+
+  // phone: digits only, max 10 — a plain field, no number spinners
+  const updPhone = (e) =>
+    setState((s) => ({ ...s, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }))
+
+  // clicking anywhere on a date field opens the calendar, not just the icon
+  const openPicker = (e) => {
+    try {
+      e.target.showPicker?.()
+    } catch {
+      /* needs a user gesture; ignore */
+    }
+  }
+
+  // picking the end date auto-fills the next billing cycle (day after expiry)
+  const updEndDate = (e) => {
+    const iso = e.target.value
+    let nextBilling = ''
+    if (iso) {
+      const next = new Date(`${iso}T00:00:00`)
+      next.setDate(next.getDate() + 1)
+      nextBilling = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}-${String(next.getDate()).padStart(2, '0')}`
+    }
+    setState((s) => ({ ...s, endDate: iso, nextBilling: nextBilling || s.nextBilling }))
+  }
 
   const saveDraft = () => {
     const next = { ...drafts, [state.docNo]: state }
@@ -214,6 +256,7 @@ export default function OfficeApp() {
               <select value={state.docType} onChange={(e) => setDocType(e.target.value)}>
                 <option value="invoice">Invoice</option>
                 <option value="agreement">Service Agreement + Invoice</option>
+                <option value="service">Service Agreement only</option>
               </select>
             </label>
             <label>
@@ -222,15 +265,15 @@ export default function OfficeApp() {
             </label>
             <label>
               Date
-              <input type="date" value={state.date} onChange={upd('date')} />
+              <input type="date" value={state.date} onChange={upd('date')} onClick={openPicker} />
             </label>
             <label>
               Start date
-              <input type="date" value={state.startDate} onChange={upd('startDate')} />
+              <input type="date" value={state.startDate} onChange={upd('startDate')} onClick={openPicker} />
             </label>
             <label>
               End date
-              <input type="date" value={state.endDate} onChange={upd('endDate')} />
+              <input type="date" value={state.endDate} onChange={updEndDate} onClick={openPicker} />
             </label>
           </fieldset>
 
@@ -250,7 +293,14 @@ export default function OfficeApp() {
             </label>
             <label>
               Phone
-              <input value={state.phone} onChange={upd('phone')} />
+              <input
+                type="tel"
+                inputMode="numeric"
+                maxLength={10}
+                value={state.phone}
+                onChange={updPhone}
+                placeholder="10-digit mobile"
+              />
             </label>
             <label>
               Customer GSTIN
@@ -262,6 +312,7 @@ export default function OfficeApp() {
             </label>
           </fieldset>
 
+          {state.docType !== 'service' && (<>
           <fieldset>
             <legend>Line items</legend>
             {state.items.map((it, i) => {
@@ -271,12 +322,18 @@ export default function OfficeApp() {
                   <label className="if-plan">
                     Plan
                     <select value={isCustom ? CUSTOM : it.desc} onChange={pickPlan(i)}>
-                      {CATALOG.map((p) => (
-                        <option key={p.label} value={p.label}>
-                          {p.label}
-                        </option>
+                      {CATALOG_GROUPS.map((g) => (
+                        <optgroup key={g.group} label={g.group}>
+                          {g.items.map((p) => (
+                            <option key={p.label} value={p.label}>
+                              {p.label}
+                            </option>
+                          ))}
+                        </optgroup>
                       ))}
-                      <option value={CUSTOM}>Custom / other…</option>
+                      <optgroup label="Other">
+                        <option value={CUSTOM}>Custom / other…</option>
+                      </optgroup>
                     </select>
                   </label>
                   {isCustom && (
@@ -325,9 +382,9 @@ export default function OfficeApp() {
             <label>
               GST
               <select value={state.gstMode} onChange={upd('gstMode')}>
-                <option value="none">No GST (registration in process)</option>
-                <option value="intra">SGST 9% + CGST 9% (Maharashtra)</option>
-                <option value="inter">IGST 18% (other states)</option>
+                <option value="none">No GST lines (registration in process)</option>
+                <option value="intra">Show SGST + CGST breakup (Maharashtra)</option>
+                <option value="inter">Show IGST breakup (other states)</option>
               </select>
             </label>
             <label>
@@ -336,12 +393,18 @@ export default function OfficeApp() {
             </label>
             <p className="office-total">Total: ₹ {fmt(totals.total)}</p>
           </fieldset>
+          </>)}
 
           <fieldset>
             <legend>Billing terms</legend>
             <label>
               Next billing cycle
-              <input value={state.nextBilling} onChange={upd('nextBilling')} />
+              <input
+                type="date"
+                value={state.nextBilling}
+                onChange={upd('nextBilling')}
+                onClick={openPicker}
+              />
             </label>
             <label>
               Security deposit
@@ -351,7 +414,7 @@ export default function OfficeApp() {
               Notice period
               <input value={state.notice} onChange={upd('notice')} />
             </label>
-            {state.docType === 'agreement' && (
+            {state.docType !== 'invoice' && (
               <>
                 <label>
                   Initial term

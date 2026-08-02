@@ -16,16 +16,20 @@ export const fmtDate = (v) => {
   return m ? `${m[3]}/${m[2]}/${m[1]}` : v || '—'
 }
 
+// All entered prices are INCLUSIVE of 18% GST. The GST rows extract the tax
+// from within the price — the customer's total never goes above the entered
+// (discounted) amount.
 export function computeTotals(state) {
   const subtotal = state.items.reduce(
     (sum, it) => sum + (Number(it.qty) || 0) * (Number(it.unitPrice) || 0) * (Number(it.periods) || 1),
     0,
   )
   const discount = subtotal * ((Number(state.discountPct) || 0) / 100)
-  const afterDiscount = subtotal - discount
-  let tax = 0
-  if (state.gstMode === 'intra' || state.gstMode === 'inter') tax = afterDiscount * 0.18
-  return { subtotal, discount, afterDiscount, tax, total: afterDiscount + tax }
+  const total = subtotal - discount
+  const hasGst = state.gstMode === 'intra' || state.gstMode === 'inter'
+  const taxable = hasGst ? total / 1.18 : total
+  const tax = total - taxable
+  return { subtotal, discount, taxable, tax, total }
 }
 
 function Brand() {
@@ -60,7 +64,7 @@ function DocHeader({ state, title }) {
           <strong>Date:</strong> {fmtDate(state.date)}
         </span>
         <span>
-          <strong>{state.docType === 'agreement' ? 'Ref' : 'Invoice'} No:</strong> {state.docNo}
+          <strong>{state.docType === 'invoice' ? 'Invoice' : 'Ref'} No:</strong> {state.docNo}
         </span>
         <span>
           <strong>Start Date:</strong> {fmtDate(state.startDate)}
@@ -138,21 +142,27 @@ function ItemsTable({ state, totals }) {
               <td className="num">− {fmt(totals.discount)}</td>
             </tr>
           )}
+          {(state.gstMode === 'intra' || state.gstMode === 'inter') && (
+            <tr className="total-row">
+              <td colSpan="4">Taxable Value</td>
+              <td className="num">{fmt(totals.taxable)}</td>
+            </tr>
+          )}
           {state.gstMode === 'intra' && (
             <>
               <tr className="total-row">
-                <td colSpan="4">SGST 9%</td>
+                <td colSpan="4">SGST 9% (included)</td>
                 <td className="num">{fmt(totals.tax / 2)}</td>
               </tr>
               <tr className="total-row">
-                <td colSpan="4">CGST 9%</td>
+                <td colSpan="4">CGST 9% (included)</td>
                 <td className="num">{fmt(totals.tax / 2)}</td>
               </tr>
             </>
           )}
           {state.gstMode === 'inter' && (
             <tr className="total-row">
-              <td colSpan="4">IGST 18%</td>
+              <td colSpan="4">IGST 18% (included)</td>
               <td className="num">{fmt(totals.tax)}</td>
             </tr>
           )}
@@ -165,7 +175,7 @@ function ItemsTable({ state, totals }) {
       <p className="doc-note">
         {state.gstMode === 'none'
           ? 'Note: GST is not charged on this document — GST registration is in process. Prices are in Indian Rupees (₹).'
-          : 'Note: Prices are in Indian Rupees (₹).'}
+          : 'Note: All prices are inclusive of 18% GST. Prices are in Indian Rupees (₹).'}
       </p>
     </>
   )
@@ -173,13 +183,13 @@ function ItemsTable({ state, totals }) {
 
 function BillingTable({ state }) {
   const rows = [
-    ['Next Billing Cycle', state.nextBilling],
+    ['Next Billing Cycle', fmtDate(state.nextBilling)],
     ['Security Deposit', state.deposit],
     ['Notice Period', state.notice],
-    ...(state.docType === 'agreement' ? [['Initial Term Length', state.initialTerm]] : []),
+    ...(state.docType !== 'invoice' ? [['Initial Term Length', state.initialTerm]] : []),
     ['Accepted Payment Methods', state.paymentMethods],
     ['Bank Details', state.bank],
-    ...(state.docType === 'agreement' ? [['Late Payment Fee', state.lateFee]] : []),
+    ...(state.docType !== 'invoice' ? [['Late Payment Fee', state.lateFee]] : []),
   ]
   return (
     <>
@@ -230,17 +240,22 @@ function DocFooter() {
 
 export default function DocPreview({ state }) {
   const totals = computeTotals(state)
-  const isAgreement = state.docType === 'agreement'
-  const title = isAgreement ? 'SERVICE AGREEMENT & MEMBERSHIP INVOICE' : 'INVOICE'
+  const isService = state.docType === 'service'
+  const withTerms = state.docType === 'agreement' || isService
+  const title = isService
+    ? 'SERVICE AGREEMENT'
+    : state.docType === 'agreement'
+      ? 'SERVICE AGREEMENT & MEMBERSHIP INVOICE'
+      : 'INVOICE'
 
   return (
     <div className="doc">
       <DocHeader state={state} title={title} />
       <CustomerTable state={state} />
-      <ItemsTable state={state} totals={totals} />
+      {!isService && <ItemsTable state={state} totals={totals} />}
       <BillingTable state={state} />
 
-      {isAgreement && (
+      {withTerms && (
         <div className="page-break">
           <div className="doc-title">TERMS OF SERVICE &amp; CODE OF CONDUCT</div>
           {TERMS.map((section) => (
@@ -261,7 +276,7 @@ export default function DocPreview({ state }) {
         </div>
       )}
 
-      {isAgreement && (
+      {withTerms && (
         <div className="page-break">
           <div className="doc-title">AUTHORISATION &amp; SIGNATURES</div>
           <p>
