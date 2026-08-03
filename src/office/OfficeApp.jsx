@@ -45,6 +45,18 @@ export const CATALOG = CATALOG_GROUPS.flatMap((g) => g.items)
 
 const CUSTOM = '__custom'
 
+// '30 days' + 3 periods -> '90 days'; 'per week' + 2 -> '2 weeks', etc.
+function durationLabel(baseDuration, periods) {
+  const n = Number(periods) || 1
+  if (n <= 1) return baseDuration
+  if (baseDuration === '30 days') return `${n * 30} days`
+  if (baseDuration === 'per week') return `${n} weeks`
+  if (baseDuration === 'per day') return `${n} days`
+  if (baseDuration === 'per night') return `${n} nights`
+  if (baseDuration === 'one sitting') return `${n} sittings`
+  return baseDuration
+}
+
 function blankItem() {
   const first = CATALOG.find((p) => p.label === 'Monthly desk — day shift')
   return { desc: first.label, qty: 1, unitPrice: first.price, periods: 1, duration: first.duration }
@@ -188,7 +200,15 @@ export default function OfficeApp({ mode = 'invoice' }) {
   const updItem = (i, key) => (e) =>
     setState((s) => ({
       ...s,
-      items: s.items.map((it, idx) => (idx === i ? { ...it, [key]: e.target.value } : it)),
+      items: s.items.map((it, idx) => {
+        if (idx !== i) return it
+        const next = { ...it, [key]: e.target.value }
+        if (key === 'periods') {
+          const plan = CATALOG.find((p) => p.label === it.desc)
+          if (plan) next.duration = durationLabel(plan.duration, e.target.value)
+        }
+        return next
+      }),
     }))
   const addItem = () => setState((s) => ({ ...s, items: [...s.items, blankItem()] }))
   const removeItem = (i) => setState((s) => ({ ...s, items: s.items.filter((_, idx) => idx !== i) }))
@@ -201,7 +221,7 @@ export default function OfficeApp({ mode = 'invoice' }) {
         if (idx !== i) return it
         if (value === CUSTOM) return { ...it, desc: '' }
         const plan = CATALOG.find((p) => p.label === value)
-        return { ...it, desc: plan.label, unitPrice: plan.price, duration: plan.duration }
+        return { ...it, desc: plan.label, unitPrice: plan.price, duration: durationLabel(plan.duration, it.periods) }
       }),
     }))
   }

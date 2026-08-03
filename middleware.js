@@ -82,7 +82,7 @@ function loginPage(next, showError) {
     </div>
     <input type="hidden" name="next" value="${next}" />
     <label>Username
-      <input name="user" autocomplete="username" autofocus required />
+      <input name="user" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" autofocus required />
     </label>
     <label>Password
       <input name="pass" type="password" autocomplete="current-password" required />
@@ -125,7 +125,8 @@ export default async function middleware(request) {
     }
     const form = await request.formData()
     const next = safeNext(form.get('next'))
-    if (form.get('user') === user && form.get('pass') === pass) {
+    const givenUser = String(form.get('user') || '').trim().toLowerCase()
+    if (givenUser === user.trim().toLowerCase() && form.get('pass') === pass) {
       const exp = String(Date.now() + SESSION_SECONDS * 1000)
       const token = `${exp}.${await hmac(exp, key)}`
       return new Response(null, {

@@ -528,3 +528,49 @@ body.office-mode {
     print-color-adjust: exact;
   }
 }
+
+/* ---------- mobile ---------- */
+
+@media (max-width: 640px) {
+  .office-top {
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    padding: 0.7rem 1rem;
+  }
+
+  .office-brand {
+    font-size: 0.95rem;
+  }
+
+  .office-hint {
+    order: 3;
+    width: 100%;
+    font-size: 0.7rem;
+  }
+
+  .office-body {
+    padding: 1rem;
+  }
+
+  .office-item .if-sm {
+    width: 30%;
+    flex: 1 1 30%;
+  }
+
+  .office-item .if-md {
+    flex: 1 1 45%;
+    width: auto;
+  }
+
+  .office-drawer-panel {
+    width: 100vw;
+  }
+
+  .office-drawer-foot {
+    flex-wrap: wrap;
+  }
+
+  .office-drawer-foot .primary {
+    width: 100%;
+  }
+}
