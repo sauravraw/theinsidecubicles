@@ -210,7 +210,12 @@ export default function OfficeApp({ mode = 'invoice' }) {
         return next
       }),
     }))
-  const addItem = () => setState((s) => ({ ...s, items: [...s.items, blankItem()] }))
+  // Add item copies the previous row, so periods/prices carry over instead of resetting
+  const addItem = () =>
+    setState((s) => ({
+      ...s,
+      items: [...s.items, s.items.length ? { ...s.items[s.items.length - 1] } : blankItem()],
+    }))
   const removeItem = (i) => setState((s) => ({ ...s, items: s.items.filter((_, idx) => idx !== i) }))
 
   const pickPlan = (i) => (e) => {
@@ -237,6 +242,25 @@ export default function OfficeApp({ mode = 'invoice' }) {
   const updPhone = (e) =>
     setState((s) => ({ ...s, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }))
 
+  // Date rules: start date >= document date, end date >= start date.
+  const updDate = (e) => {
+    const v = e.target.value
+    setState((s) => {
+      const startDate = s.startDate && v && s.startDate < v ? v : s.startDate
+      const endDate = s.endDate && startDate && s.endDate < startDate ? '' : s.endDate
+      return { ...s, date: v, startDate, endDate }
+    })
+  }
+
+  const updStartDate = (e) => {
+    let v = e.target.value
+    setState((s) => {
+      if (v && s.date && v < s.date) v = s.date
+      const endDate = s.endDate && v && s.endDate < v ? '' : s.endDate
+      return { ...s, startDate: v, endDate }
+    })
+  }
+
   // clicking anywhere on a date field opens the calendar, not just the icon
   const openPicker = (e) => {
     try {
@@ -248,7 +272,8 @@ export default function OfficeApp({ mode = 'invoice' }) {
 
   // picking the end date auto-fills the next billing cycle (day after expiry)
   const updEndDate = (e) => {
-    const iso = e.target.value
+    let iso = e.target.value
+    if (iso && state.startDate && iso < state.startDate) iso = state.startDate
     let nextBilling = ''
     if (iso) {
       const next = new Date(`${iso}T00:00:00`)
@@ -310,11 +335,11 @@ export default function OfficeApp({ mode = 'invoice' }) {
             </label>
             <label>
               Date
-              <input type="date" value={state.date} onChange={upd('date')} onClick={openPicker} />
+              <input type="date" value={state.date} onChange={updDate} onClick={openPicker} />
             </label>
             <label>
               Start date
-              <input type="date" value={state.startDate} onChange={upd('startDate')} onClick={openPicker} />
+              <input type="date" value={state.startDate} onChange={updStartDate} onClick={openPicker} />
             </label>
             <label>
               {state.docType === 'quotation' ? 'Valid until' : 'End date'}

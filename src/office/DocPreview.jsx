@@ -56,7 +56,7 @@ function DocHeader({ state, title }) {
         <p>
           {COMPANY.email} · {COMPANY.phone}
         </p>
-        <p className="doc-gstin">{state.ourGstin ? `GSTIN: ${state.ourGstin}` : 'GSTIN: applied for — registration in process'}</p>
+        {state.ourGstin && <p className="doc-gstin">GSTIN: {state.ourGstin}</p>}
       </div>
       <div className="doc-title">{title}</div>
       <div className="doc-meta">
@@ -84,7 +84,7 @@ function CustomerTable({ state }) {
     ['Customer Name / Entity', state.entity],
     ['Point of Contact', state.contact],
     ['Email', state.email],
-    ['Phone', state.phone],
+    ['Phone', state.phone ? `+91-${state.phone}` : ''],
     ['GST Number (if applicable)', state.gstin],
     ['Billing Address', state.address],
   ]

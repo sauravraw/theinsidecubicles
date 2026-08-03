@@ -467,7 +467,7 @@ body.office-mode {
 
 @page {
   size: A4;
-  margin: 12mm;
+  margin: 0; /* zero page margin removes the browser's date/URL header-footer stamps */
 }
 
 @media print {
@@ -508,7 +508,7 @@ body.office-mode {
     width: auto;
     max-width: none;
     margin: 0;
-    padding: 0;
+    padding: 12mm; /* the document provides its own page margins now */
     box-shadow: none;
     font-size: 10pt;
   }
