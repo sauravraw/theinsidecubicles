@@ -56,9 +56,11 @@ function loginPage(next, showError) {
     width: min(360px, 92vw); background: #142e47; padding: 2rem;
     border: 1px solid rgba(233,239,245,0.15);
   }
-  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem;
-    font-weight: 800; letter-spacing: 0.06em; font-size: 0.95rem; }
-  .brand svg { width: 22px; height: 22px; }
+  .brand { display: flex; flex-direction: column; align-items: center; gap: 12px;
+    margin-bottom: 1.8rem; text-align: center; }
+  .brand svg { width: 36px; height: 36px; }
+  .brand .t { font-weight: 800; letter-spacing: 0.08em; font-size: 1.05rem; }
+  .brand .s { font-size: 0.66rem; letter-spacing: 0.34em; color: #9db2c5; }
   label { display: block; margin-top: 1rem; font-size: 0.72rem; letter-spacing: 0.1em;
     text-transform: uppercase; color: #9db2c5; }
   input { display: block; width: 100%; margin-top: 0.35rem; padding: 0.6em 0.7em;
@@ -68,14 +70,15 @@ function loginPage(next, showError) {
     background: #ff7a4d; color: #091a2b; font-weight: 700; letter-spacing: 0.08em;
     text-transform: uppercase; font-size: 0.8rem; cursor: pointer; }
   .err { margin-top: 1rem; font-size: 0.8rem; color: #ff7a4d; }
-  .note { margin-top: 1.2rem; font-size: 0.7rem; color: #9db2c5; }
+  .note { margin-top: 1.2rem; font-size: 0.7rem; color: #9db2c5; text-align: center; }
 </style>
 </head>
 <body>
   <form class="card" method="POST" action="/office-login">
     <div class="brand">
       <svg viewBox="0 0 32 32"><rect x="2" y="2" width="13" height="13" fill="#ff7a4d"/><rect x="17" y="2" width="13" height="13" fill="none" stroke="#e9eff5" stroke-width="2"/><rect x="2" y="17" width="13" height="13" fill="none" stroke="#e9eff5" stroke-width="2"/><rect x="17" y="17" width="13" height="13" fill="none" stroke="#e9eff5" stroke-width="2"/></svg>
-      THE INSIDE CUBICLES — OFFICE
+      <span class="t">THE INSIDE CUBICLES</span>
+      <span class="s">OFFICE</span>
     </div>
     <input type="hidden" name="next" value="${next}" />
     <label>Username
