@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>The Inside Cubicles — Visiting Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  /* Card: 89 x 51 mm trim + 3 mm bleed all around = 95 x 57 mm artwork */
+  * { box-sizing: border-box; margin: 0; }
+
+  @page { size: 95mm 57mm; margin: 0; }
+
+  html, body { width: 95mm; }
+
+  body {
+    font-family: 'Public Sans', sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .card {
+    position: relative;
+    width: 95mm;
+    height: 57mm;
+    background: #0e2338;
+    color: #e9eff5;
+    overflow: hidden;
+    break-after: page;
+    /* faint drafting grid, like the site */
+    background-image:
+      linear-gradient(rgba(233, 239, 245, 0.045) 0.25mm, transparent 0.25mm),
+      linear-gradient(90deg, rgba(233, 239, 245, 0.045) 0.25mm, transparent 0.25mm);
+    background-size: 6mm 6mm;
+  }
+
+  /* ---------- FRONT: logo only ---------- */
+  .front {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4.2mm;
+  }
+
+  .front svg { width: 12.5mm; height: 12.5mm; }
+
+  .front .wordmark {
+    font-family: 'Big Shoulders', sans-serif;
+    font-weight: 800;
+    font-size: 15.5pt;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .front .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 5.6pt;
+    letter-spacing: 0.42em;
+    color: #9db2c5;
+    text-transform: uppercase;
+  }
+
+  .front .rule {
+    width: 14mm;
+    height: 0.5mm;
+    background: #ff7a4d;
+  }
+
+  /* ---------- BACK: contact + quote ---------- */
+  .back {
+    padding: 8mm 9mm 7.5mm; /* 3mm bleed + ~5mm safe margin */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .back .phone {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 11.5pt;
+    letter-spacing: 0.06em;
+  }
+
+  .back .phone b { color: #ff7a4d; }
+
+  .back .lines {
+    margin-top: 2.6mm;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 6.6pt;
+    letter-spacing: 0.05em;
+    line-height: 2;
+    color: #e9eff5;
+  }
+
+  .back .divider {
+    margin: 2.8mm 0 2.4mm;
+    height: 0.35mm;
+    width: 42mm;
+    background: rgba(233, 239, 245, 0.22);
+  }
+
+  .back .addr {
+    font-size: 6.4pt;
+    line-height: 1.55;
+    color: #9db2c5;
+  }
+
+  .back .quote {
+    margin-top: auto;
+    font-style: italic;
+    font-size: 7.6pt;
+    color: #e9eff5;
+  }
+
+  .back .quote::before {
+    content: '“';
+    color: #ff7a4d;
+    font-weight: 600;
+    margin-right: 0.4mm;
+  }
+
+  .back .quote::after {
+    content: '”';
+    color: #ff7a4d;
+    font-weight: 600;
+    margin-left: 0.4mm;
+  }
+</style>
+</head>
+<body>
+
+  <!-- FRONT -->
+  <div class="card front">
+    <svg viewBox="0 0 32 32">
+      <rect x="2" y="2" width="13" height="13" fill="#ff7a4d"/>
+      <rect x="17" y="2" width="13" height="13" fill="none" stroke="#e9eff5" stroke-width="2"/>
+      <rect x="2" y="17" width="13" height="13" fill="none" stroke="#e9eff5" stroke-width="2"/>
+      <rect x="17" y="17" width="13" height="13" fill="none" stroke="#e9eff5" stroke-width="2"/>
+    </svg>
+    <div class="wordmark">The Inside Cubicles</div>
+    <div class="rule"></div>
+    <div class="tag">Coworking · Day &amp; Night</div>
+  </div>
+
+  <!-- BACK -->
+  <div class="card back">
+    <div class="phone"><b>+91</b> 79774 48516</div>
+    <div class="lines">
+      www.theinsidecubicles.com<br />
+      theinsidecubicles@gmail.com
+    </div>
+    <div class="divider"></div>
+    <div class="addr">
+      F44, First Floor, Cosmos Square, Rustomjee Global City,<br />
+      HDIL, Vasai-Virar, Maharashtra 401303
+    </div>
+    <p class="quote">The best ideas happen inside.</p>
+  </div>
+
+</body>
+</html>
