@@ -50,6 +50,11 @@ body.office-mode {
   cursor: pointer;
 }
 
+.office-logout {
+  margin-left: auto;
+  text-decoration: none;
+}
+
 .office-btn.primary {
   background: #e4572e;
   border-color: #e4572e;

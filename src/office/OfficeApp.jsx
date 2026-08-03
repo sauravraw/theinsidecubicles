@@ -265,6 +265,9 @@ export default function OfficeApp({ mode = 'invoice' }) {
           Fill the form, then open the preview to check every detail and download the PDF.
           {sheetStatus ? ` · ${sheetStatus}` : ''}
         </span>
+        <a className="office-btn office-logout" href="/office-logout">
+          Logout
+        </a>
       </header>
 
       <div className="office-body">
