@@ -64,14 +64,14 @@ function DocHeader({ state, title }) {
           <strong>Date:</strong> {fmtDate(state.date)}
         </span>
         <span>
-          <strong>{state.docType === 'invoice' ? 'Invoice' : 'Ref'} No:</strong> {state.docNo}
+          <strong>{state.docType === 'invoice' ? 'Invoice' : state.docType === 'quotation' ? 'Quotation' : 'Ref'} No:</strong> {state.docNo}
         </span>
         <span>
           <strong>Start Date:</strong> {fmtDate(state.startDate)}
         </span>
         {state.endDate && (
           <span>
-            <strong>End Date:</strong> {fmtDate(state.endDate)}
+            <strong>{state.docType === 'quotation' ? 'Valid Until' : 'End Date'}:</strong> {fmtDate(state.endDate)}
           </span>
         )}
       </div>
@@ -109,6 +109,8 @@ function CustomerTable({ state }) {
 }
 
 function ItemsTable({ state, totals }) {
+  const sac = (state.sac || '').trim()
+  const span = sac ? 5 : 4
   return (
     <>
       <h2 className="doc-section">Plan Details &amp; Seat Allocation</h2>
@@ -116,6 +118,7 @@ function ItemsTable({ state, totals }) {
         <thead>
           <tr>
             <th>Plan / Description</th>
+            {sac && <th>SAC</th>}
             <th>Qty</th>
             <th>Unit Price</th>
             <th>Duration</th>
@@ -126,6 +129,7 @@ function ItemsTable({ state, totals }) {
           {state.items.map((it, i) => (
             <tr key={i}>
               <td>{it.desc}</td>
+              {sac && <td>{sac}</td>}
               <td>{it.qty}</td>
               <td>{fmt(Number(it.unitPrice))}</td>
               <td>{it.duration}</td>
@@ -133,41 +137,41 @@ function ItemsTable({ state, totals }) {
             </tr>
           ))}
           <tr className="total-row">
-            <td colSpan="4">Subtotal</td>
+            <td colSpan={span}>Subtotal</td>
             <td className="num">{fmt(totals.subtotal)}</td>
           </tr>
           {Number(state.discountPct) > 0 && (
             <tr className="total-row">
-              <td colSpan="4">Discount {state.discountPct}%</td>
+              <td colSpan={span}>Discount {state.discountPct}%</td>
               <td className="num">− {fmt(totals.discount)}</td>
             </tr>
           )}
           {(state.gstMode === 'intra' || state.gstMode === 'inter') && (
             <tr className="total-row">
-              <td colSpan="4">Taxable Value</td>
+              <td colSpan={span}>Taxable Value</td>
               <td className="num">{fmt(totals.taxable)}</td>
             </tr>
           )}
           {state.gstMode === 'intra' && (
             <>
               <tr className="total-row">
-                <td colSpan="4">SGST 9% (included)</td>
+                <td colSpan={span}>SGST 9% (included)</td>
                 <td className="num">{fmt(totals.tax / 2)}</td>
               </tr>
               <tr className="total-row">
-                <td colSpan="4">CGST 9% (included)</td>
+                <td colSpan={span}>CGST 9% (included)</td>
                 <td className="num">{fmt(totals.tax / 2)}</td>
               </tr>
             </>
           )}
           {state.gstMode === 'inter' && (
             <tr className="total-row">
-              <td colSpan="4">IGST 18% (included)</td>
+              <td colSpan={span}>IGST 18% (included)</td>
               <td className="num">{fmt(totals.tax)}</td>
             </tr>
           )}
           <tr className="total-row grand">
-            <td colSpan="4">Total Amount</td>
+            <td colSpan={span}>Total Amount</td>
             <td className="num">₹ {fmt(totals.total)}</td>
           </tr>
         </tbody>
@@ -183,13 +187,13 @@ function ItemsTable({ state, totals }) {
 
 function BillingTable({ state }) {
   const rows = [
-    ['Next Billing Cycle', fmtDate(state.nextBilling)],
+    ...(state.docType !== 'quotation' ? [['Next Billing Cycle', fmtDate(state.nextBilling)]] : []),
     ['Security Deposit', state.deposit],
     ['Notice Period', state.notice],
-    ...(state.docType !== 'invoice' ? [['Initial Term Length', state.initialTerm]] : []),
+    ...(state.docType === 'agreement' || state.docType === 'service' ? [['Initial Term Length', state.initialTerm]] : []),
     ['Accepted Payment Methods', state.paymentMethods],
     ['Bank Details', state.bank],
-    ...(state.docType !== 'invoice' ? [['Late Payment Fee', state.lateFee]] : []),
+    ...(state.docType === 'agreement' || state.docType === 'service' ? [['Late Payment Fee', state.lateFee]] : []),
   ]
   return (
     <>
@@ -224,7 +228,7 @@ function Signatures({ state }) {
         <p>Name: {state.ourSignatory || '____________________'}</p>
       </div>
       <div>
-        <h3>For the Member / Entity</h3>
+        <h3>{state.docType === 'quotation' ? 'Accepted by (Member / Entity)' : 'For the Member / Entity'}</h3>
         <p className="sign-line">Authorised Signatory:</p>
         <div className="sign-rule" />
         <p>Name: {state.contact}</p>
@@ -241,19 +245,29 @@ function DocFooter() {
 export default function DocPreview({ state }) {
   const totals = computeTotals(state)
   const isService = state.docType === 'service'
+  const isQuotation = state.docType === 'quotation'
   const withTerms = state.docType === 'agreement' || isService
-  const title = isService
-    ? 'SERVICE AGREEMENT'
-    : state.docType === 'agreement'
-      ? 'SERVICE AGREEMENT & MEMBERSHIP INVOICE'
-      : 'INVOICE'
+  const title = isQuotation
+    ? 'QUOTATION'
+    : isService
+      ? 'SERVICE AGREEMENT'
+      : state.docType === 'agreement'
+        ? 'SERVICE AGREEMENT & MEMBERSHIP INVOICE'
+        : 'INVOICE'
 
   return (
     <div className="doc">
       <DocHeader state={state} title={title} />
       <CustomerTable state={state} />
       {!isService && <ItemsTable state={state} totals={totals} />}
-      <BillingTable state={state} />
+      {isQuotation && (
+        <p className="doc-note">
+          This quotation is an offer of pricing only, valid until{' '}
+          {state.endDate ? fmtDate(state.endDate) : '15 days from the date above'}. Desks and rooms
+          are subject to availability at the time of confirmation.
+        </p>
+      )}
+      {!isQuotation && <BillingTable state={state} />}
 
       {withTerms && (
         <div className="page-break">

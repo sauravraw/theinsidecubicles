@@ -31,17 +31,19 @@ npm run preview  # serve the production build
 - `src/index.css` — the whole design system. Colors and fonts are CSS custom properties
   in the `:root` / `[data-theme='blueprint']` blocks at the top.
 
-## Office (hidden document generator)
+## Hidden document generators
 
-`/office` is a hidden route (not linked anywhere, `noindex`) that generates customer
-PDFs — Invoice, or Service Agreement + Invoice — with a form on the left and a live
-preview on the right. "Download PDF" uses the browser print dialog (choose "Save as
-PDF"). Drafts save to the browser via "Save draft".
+Two hidden routes (not linked anywhere, `noindex`) generate customer PDFs with a
+form and a preview drawer; "Download PDF" uses the browser print dialog (choose
+"Save as PDF"), and drafts save to the browser:
 
-On Vercel the route is protected by HTTP Basic Auth (`middleware.js`): set the
+- `/invoice` — Invoice, Service Agreement + Invoice, or Service Agreement only
+- `/quotation` — Quotations (TICQ numbering, "valid until" date, Accepted-by block)
+
+On Vercel both routes are protected by HTTP Basic Auth (`middleware.js`): set the
 environment variables `OFFICE_USER` and `OFFICE_PASS` in the Vercel dashboard and
-redeploy. Until they are set, `/office` returns 401 for everyone. On local dev the
-route is open (middleware only runs on Vercel).
+redeploy. Until they are set, the routes return 401 for everyone. On local dev they
+are open (middleware only runs on Vercel).
 
 GST defaults to "not charged — registration in process"; switch the GST dropdown to
 SGST+CGST or IGST and fill "Our GSTIN" once registration arrives. Agreement terms

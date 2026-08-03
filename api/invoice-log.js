@@ -1,4 +1,4 @@
-// Vercel serverless function — bridges the /office tool and the Google Sheet.
+// Vercel serverless function — bridges the /invoice and /quotation tools and the Google Sheet.
 // Keeps the Apps Script URL and shared secret server-side (never in the bundle).
 // Env vars (Vercel dashboard): SHEETS_WEBAPP_URL, SHEETS_SECRET.
 //
@@ -24,7 +24,10 @@ export default async function handler(req, res) {
       return res.status(200).send(await r.text())
     }
 
-    const r = await fetch(`${url}?secret=${encodeURIComponent(secret)}`, { redirect: 'follow' })
+    const type = req.query && req.query.type === 'quotation' ? 'quotation' : 'invoice'
+    const r = await fetch(`${url}?secret=${encodeURIComponent(secret)}&type=${type}`, {
+      redirect: 'follow',
+    })
     return res.status(200).send(await r.text())
   } catch (err) {
     return res.status(502).json({ ok: false, error: String(err) })

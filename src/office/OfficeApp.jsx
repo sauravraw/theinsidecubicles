@@ -50,7 +50,7 @@ function blankItem() {
   return { desc: first.label, qty: 1, unitPrice: first.price, periods: 1, duration: first.duration }
 }
 
-const DOC_PREFIX = { invoice: 'TICI', agreement: 'TICSA', service: 'TICS' }
+const DOC_PREFIX = { invoice: 'TICI', agreement: 'TICSA', service: 'TICS', quotation: 'TICQ' }
 
 function initialState(docType = 'invoice') {
   return {
@@ -70,6 +70,7 @@ function initialState(docType = 'invoice') {
     items: [blankItem()],
     discountPct: 0,
     gstMode: 'none',
+    sac: '997212',
     nextBilling: '',
     deposit: 'No deposit',
     notice: '30 days written notice',
@@ -91,25 +92,47 @@ function loadDrafts() {
 // 'TICI-2807A3' → 'TICI-2807A4' when the last number is from today; else A1 for today.
 function nextDocNo(lastDocNo, docType) {
   const prefix = DOC_PREFIX[docType]
-  const m = /^TIC(?:SA|S|I)-(\d{4})A(\d+)$/.exec(lastDocNo || '')
+  const m = /^TIC(?:SA|S|Q|I)-(\d{4})A(\d+)$/.exec(lastDocNo || '')
   if (m && m[1] === `${dd}${mm}`) return `${prefix}-${dd}${mm}A${Number(m[2]) + 1}`
   return `${prefix}-${dd}${mm}A1`
 }
 
-export default function OfficeApp() {
-  const [state, setState] = useState(() => initialState())
+function loadWork(key, fallbackType) {
+  try {
+    const w = JSON.parse(localStorage.getItem(key))
+    return w && w.docType ? { ...initialState(fallbackType), ...w } : null
+  } catch {
+    return null
+  }
+}
+
+export default function OfficeApp({ mode = 'invoice' }) {
+  const baseType = mode === 'quotation' ? 'quotation' : 'invoice'
+  const WORK_KEY = mode === 'quotation' ? 'tic-work-quotation' : 'tic-work-invoice'
+  const [state, setState] = useState(() => loadWork(WORK_KEY, baseType) || initialState(baseType))
+  const restoredWork = !!localStorage.getItem(WORK_KEY)
+
+  // auto-save the work in progress — a refresh restores everything
+  useEffect(() => {
+    try {
+      localStorage.setItem(WORK_KEY, JSON.stringify(state))
+    } catch {
+      /* storage full/blocked — drafts still work */
+    }
+  }, [state, WORK_KEY])
   const [drafts, setDrafts] = useState(loadDrafts)
   const [previewOpen, setPreviewOpen] = useState(() => window.location.hash === '#preview')
   const [confirmed, setConfirmed] = useState(false)
   const [sheetStatus, setSheetStatus] = useState('')
 
   // Suggest the next number from the Google Sheet log (when configured).
+  // Each page reads its own tab: Invoices or Quotations.
   useEffect(() => {
-    fetch('/api/invoice-log')
+    fetch(`/api/invoice-log?type=${mode === 'quotation' ? 'quotation' : 'invoice'}`)
       .then((r) => r.json())
       .then((data) => {
         if (data && data.ok && data.lastDocNo !== undefined) {
-          setState((s) => ({ ...s, docNo: nextDocNo(data.lastDocNo, s.docType) }))
+          if (!restoredWork) setState((s) => ({ ...s, docNo: nextDocNo(data.lastDocNo, s.docType) }))
           setSheetStatus(`Sheet connected — ${data.count} documents logged so far`)
         } else {
           setSheetStatus('Sheet logging not set up yet — numbers are manual')
@@ -149,7 +172,7 @@ export default function OfficeApp() {
   }
 
   useEffect(() => {
-    document.title = 'Office — The Inside Cubicles'
+    document.title = mode === 'quotation' ? 'Quotation — The Inside Cubicles' : 'Office — The Inside Cubicles'
     const meta = document.createElement('meta')
     meta.name = 'robots'
     meta.content = 'noindex, nofollow'
@@ -187,7 +210,7 @@ export default function OfficeApp() {
     setState((s) => ({
       ...s,
       docType,
-      docNo: s.docNo.replace(/^TIC(SA|S|I)/, DOC_PREFIX[docType]),
+      docNo: s.docNo.replace(/^TIC(SA|S|Q|I)/, DOC_PREFIX[docType]),
     }))
 
   // phone: digits only, max 10 — a plain field, no number spinners
@@ -237,28 +260,27 @@ export default function OfficeApp() {
   return (
     <div className="office">
       <header className="office-top">
-        <span className="office-brand">The Inside Cubicles — Office</span>
+        <span className="office-brand">The Inside Cubicles — {mode === 'quotation' ? 'Quotation' : 'Office'}</span>
         <span className="office-hint">
           Fill the form, then open the preview to check every detail and download the PDF.
           {sheetStatus ? ` · ${sheetStatus}` : ''}
         </span>
-        <button className="office-btn primary" type="button" onClick={openPreview}>
-          Preview
-        </button>
       </header>
 
       <div className="office-body">
         <form className="office-form" onSubmit={(e) => e.preventDefault()}>
           <fieldset>
             <legend>Document</legend>
-            <label>
-              Type
-              <select value={state.docType} onChange={(e) => setDocType(e.target.value)}>
-                <option value="invoice">Invoice</option>
-                <option value="agreement">Service Agreement + Invoice</option>
-                <option value="service">Service Agreement only</option>
-              </select>
-            </label>
+            {mode !== 'quotation' && (
+              <label>
+                Type
+                <select value={state.docType} onChange={(e) => setDocType(e.target.value)}>
+                  <option value="invoice">Invoice</option>
+                  <option value="agreement">Service Agreement + Invoice</option>
+                  <option value="service">Service Agreement only</option>
+                </select>
+              </label>
+            )}
             <label>
               Number
               <input value={state.docNo} onChange={upd('docNo')} />
@@ -272,7 +294,7 @@ export default function OfficeApp() {
               <input type="date" value={state.startDate} onChange={upd('startDate')} onClick={openPicker} />
             </label>
             <label>
-              End date
+              {state.docType === 'quotation' ? 'Valid until' : 'End date'}
               <input type="date" value={state.endDate} onChange={updEndDate} onClick={openPicker} />
             </label>
           </fieldset>
@@ -391,12 +413,17 @@ export default function OfficeApp() {
               Our GSTIN
               <input value={state.ourGstin} onChange={upd('ourGstin')} placeholder="Fill once registered" />
             </label>
+            <label>
+              SAC code
+              <input value={state.sac} onChange={upd('sac')} placeholder="997212 for coworking rental" />
+            </label>
             <p className="office-total">Total: ₹ {fmt(totals.total)}</p>
           </fieldset>
           </>)}
 
           <fieldset>
-            <legend>Billing terms</legend>
+            <legend>{state.docType === 'quotation' ? 'Signatory' : 'Billing terms'}</legend>
+            {state.docType !== 'quotation' && (<>
             <label>
               Next billing cycle
               <input
@@ -414,7 +441,7 @@ export default function OfficeApp() {
               Notice period
               <input value={state.notice} onChange={upd('notice')} />
             </label>
-            {state.docType !== 'invoice' && (
+            {(state.docType === 'agreement' || state.docType === 'service') && (
               <>
                 <label>
                   Initial term
@@ -434,6 +461,7 @@ export default function OfficeApp() {
               Bank details
               <textarea rows="3" value={state.bank} onChange={upd('bank')} />
             </label>
+            </>)}
             <label>
               Our signatory
               <input value={state.ourSignatory} onChange={upd('ourSignatory')} placeholder="Name" />
@@ -441,8 +469,11 @@ export default function OfficeApp() {
           </fieldset>
 
           <fieldset>
-            <legend>Drafts (saved in this browser)</legend>
+            <legend>Actions &amp; drafts</legend>
             <div className="office-actions">
+              <button className="office-btn primary" type="button" onClick={openPreview}>
+                Preview
+              </button>
               <button type="button" className="office-btn" onClick={saveDraft}>
                 Save draft
               </button>
