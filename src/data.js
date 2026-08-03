@@ -68,8 +68,8 @@ export const SHIFTS = {
 }
 
 // `price` is the FINAL round figure a member pays, inclusive of 18% GST.
-// The pricing card derives the base price from it (price ÷ 1.18), so the
-// card reads e.g. "₹3,390 / 30 days · + 18% GST = ₹4,000".
+// The pricing card shows it big (like the catalog) and derives the base
+// underneath (price ÷ 1.18), e.g. "₹4,000 / 30 days · ₹3,390 + 18% GST".
 export const PLANS = [
   {
     id: 'two-hours',

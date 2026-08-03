@@ -62,10 +62,10 @@ export default function Pricing() {
             <p className="price-tagline">{pick(plan.tagline, shift)}</p>
             <p className="price-figure">
               <span className="price-swap" key={shift}>
-                ₹{fmt(basePrice(pick(plan.price, shift)))}{' '}
+                ₹{fmt(pick(plan.price, shift))}{' '}
                 <span className="price-per">/ {pick(plan.per, shift)}</span>
                 <span className="price-gst">
-                  + 18% GST = <strong>₹{fmt(pick(plan.price, shift))}</strong>
+                  <strong>₹{fmt(basePrice(pick(plan.price, shift)))}</strong> + 18% GST
                 </span>
               </span>
             </p>

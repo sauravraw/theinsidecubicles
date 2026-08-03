@@ -1095,6 +1095,7 @@ a {
   font-size: 1.9rem;
   font-weight: 600;
   line-height: 1;
+  color: var(--accent);
 }
 
 .price-per {
@@ -1107,8 +1108,8 @@ a {
 
 .price-gst {
   display: block;
-  margin-top: 0.5rem;
-  font-size: 0.74rem;
+  margin-top: 0.55rem;
+  font-size: 0.86rem;
   font-weight: 400;
   letter-spacing: 0.03em;
   color: var(--muted);
@@ -1116,6 +1117,7 @@ a {
 
 .price-gst strong {
   font-weight: 600;
+  font-size: 0.98rem;
   color: var(--ink);
 }
 
