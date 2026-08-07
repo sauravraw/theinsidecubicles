@@ -87,6 +87,11 @@ function DocHeader({ state, title }) {
             <strong>{state.docType === 'quotation' ? 'Valid Until' : 'End Date'}:</strong> {fmtDate(state.endDate)}
           </span>
         )}
+        {(state.docType === 'agreement' || state.docType === 'service') && state.initialTerm && (
+          <span>
+            <strong>Agreement Term:</strong> {state.initialTerm}
+          </span>
+        )}
       </div>
     </>
   )

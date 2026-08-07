@@ -8,6 +8,31 @@ const dd = String(today.getDate()).padStart(2, '0')
 const mm = String(today.getMonth() + 1).padStart(2, '0')
 const todayISO = `${today.getFullYear()}-${mm}-${dd}`
 
+// ---- date helpers: start date → end date → periods stay linked ----
+const isoFrom = (dt) =>
+  `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`
+
+// '2026-08-10' + 1 month → '2026-09-09' (full months, inclusive of the start day)
+export function addMonthsInclusive(iso, n) {
+  const [y, m, d] = iso.split('-').map(Number)
+  const dt = new Date(y, m - 1 + n, d)
+  dt.setDate(dt.getDate() - 1)
+  return isoFrom(dt)
+}
+
+export function addDays(iso, n) {
+  const [y, m, d] = iso.split('-').map(Number)
+  return isoFrom(new Date(y, m - 1, d + n))
+}
+
+// whole months covered by start..end (inclusive), nearest, never below 1
+export function monthsBetween(startIso, endIso) {
+  const [sy, sm, sd] = startIso.split('-').map(Number)
+  const [ey, em, ed] = endIso.split('-').map(Number)
+  const days = (new Date(ey, em - 1, ed + 1) - new Date(sy, sm - 1, sd)) / 86400000
+  return Math.max(1, Math.round(days / 30.44))
+}
+
 const DRAFTS_KEY = 'tic-office-drafts'
 
 // Plan catalogue — picking one fills description, price, and duration (all editable
@@ -65,13 +90,24 @@ function blankItem() {
 
 const DOC_PREFIX = { invoice: 'TICI', agreement: 'TICSA', service: 'TICS', quotation: 'TICQ' }
 
+// Re-sync 30-day (monthly-type) items' periods to the start..end month span.
+// Hourly / daily / weekly items and custom rows are left for manual entry.
+function syncMonthlyPeriods(items, n) {
+  return items.map((it) => {
+    const plan = CATALOG.find((p) => p.label === it.desc)
+    if (!plan || plan.duration !== '30 days') return it
+    return { ...it, periods: n, duration: durationLabel(plan.duration, n) }
+  })
+}
+
 function initialState(docType = 'invoice') {
   return {
     docType,
     docNo: `${DOC_PREFIX[docType]}-${dd}${mm}A1`,
     date: todayISO,
     startDate: todayISO,
-    endDate: '',
+    // quotations default to a 15-day validity; everything else to a 1-month term
+    endDate: docType === 'quotation' ? addDays(todayISO, 15) : addMonthsInclusive(todayISO, 1),
     ourGstin: '',
     ourSignatory: '',
     entity: '',
@@ -85,7 +121,7 @@ function initialState(docType = 'invoice') {
     gstMode: 'none',
     invoiceKind: 'commercial',
     sac: '997212',
-    nextBilling: '',
+    nextBilling: docType === 'quotation' ? '' : addDays(addMonthsInclusive(todayISO, 1), 1),
     deposit: 'No deposit',
     notice: '30 days written notice',
     initialTerm: '12 months',
@@ -282,8 +318,23 @@ export default function OfficeApp({ mode = 'invoice' }) {
     let v = e.target.value
     setState((s) => {
       if (v && s.date && v < s.date) v = s.date
-      const endDate = s.endDate && v && s.endDate < v ? '' : s.endDate
-      return { ...s, startDate: v, endDate }
+      if (!v) {
+        return { ...s, startDate: v }
+      }
+      if (s.docType === 'quotation') {
+        // valid-until stays an offer deadline: default it, never stomp a manual value
+        const endDate = s.endDate || addDays(s.date || v, 15)
+        return { ...s, startDate: v, endDate }
+      }
+      // picking a start date defaults the term to one full month
+      const endDate = addMonthsInclusive(v, 1)
+      return {
+        ...s,
+        startDate: v,
+        endDate,
+        nextBilling: addDays(endDate, 1),
+        items: syncMonthlyPeriods(s.items, 1),
+      }
     })
   }
 
@@ -297,16 +348,20 @@ export default function OfficeApp({ mode = 'invoice' }) {
   }
 
   // picking the end date auto-fills the next billing cycle (day after expiry)
+  // and re-syncs monthly items' periods to the new span
   const updEndDate = (e) => {
     let iso = e.target.value
-    if (iso && state.startDate && iso < state.startDate) iso = state.startDate
-    let nextBilling = ''
-    if (iso) {
-      const next = new Date(`${iso}T00:00:00`)
-      next.setDate(next.getDate() + 1)
-      nextBilling = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}-${String(next.getDate()).padStart(2, '0')}`
-    }
-    setState((s) => ({ ...s, endDate: iso, nextBilling: nextBilling || s.nextBilling }))
+    setState((s) => {
+      if (iso && s.startDate && iso < s.startDate) iso = s.startDate
+      if (!iso) return { ...s, endDate: iso }
+      if (s.docType === 'quotation') return { ...s, endDate: iso }
+      return {
+        ...s,
+        endDate: iso,
+        nextBilling: addDays(iso, 1),
+        items: s.startDate ? syncMonthlyPeriods(s.items, monthsBetween(s.startDate, iso)) : s.items,
+      }
+    })
   }
 
   const saveDraft = () => {
@@ -535,18 +590,16 @@ export default function OfficeApp({ mode = 'invoice' }) {
               Notice period
               <input value={state.notice} onChange={upd('notice')} />
             </label>
-            {(state.docType === 'agreement' || state.docType === 'service') && (
-              <>
-                <label>
-                  Initial term
-                  <input value={state.initialTerm} onChange={upd('initialTerm')} />
-                </label>
-                <label>
-                  Late payment fee
-                  <input value={state.lateFee} onChange={upd('lateFee')} />
-                </label>
-              </>
+            {(state.docType === 'agreement' || state.docType === 'service' || mode === 'agreement') && (
+              <label>
+                Initial term (agreement length)
+                <input value={state.initialTerm} onChange={upd('initialTerm')} placeholder="e.g. 11 months" />
+              </label>
             )}
+            <label>
+              Late payment fee
+              <input value={state.lateFee} onChange={upd('lateFee')} />
+            </label>
             <label>
               Payment methods
               <input value={state.paymentMethods} onChange={upd('paymentMethods')} />
@@ -599,31 +652,33 @@ export default function OfficeApp({ mode = 'invoice' }) {
           <div className="office-drawer-backdrop" onClick={() => setPreviewOpen(false)} />
           <div className="office-drawer-panel">
             <div className="office-drawer-head">
-              <span>Preview — {docFor(printDoc).docNo}</span>
-              {mode === 'agreement' && (
-                <span className="office-doc-tabs">
-                  <button
-                    className={`office-btn ${printDoc === 'invoice' ? 'primary' : ''}`}
-                    type="button"
-                    onClick={() => setPrintDoc('invoice')}
-                  >
-                    Invoice
-                  </button>
-                  <button
-                    className={`office-btn ${printDoc === 'agreement' ? 'primary' : ''}`}
-                    type="button"
-                    onClick={() => setPrintDoc('agreement')}
-                  >
-                    Agreement + Invoice
-                  </button>
-                </span>
-              )}
+              <span>
+                Preview — {mode === 'agreement'
+                  ? `${state.docNo} + ${docFor('agreement').docNo}`
+                  : state.docNo}
+              </span>
               <button className="office-btn" type="button" onClick={() => setPreviewOpen(false)}>
                 × Close
               </button>
             </div>
             <div className="office-drawer-body">
-              <DocPreview state={docFor(printDoc)} />
+              {mode === 'agreement' ? (
+                /* both documents preview stacked; printDoc picks which one prints */
+                <div className={`office-doc-pair print-${printDoc}`}>
+                  <div className="office-doc-slot slot-invoice">
+                    <div className="office-doc-label">Document 1 of 2 — Invoice ({state.docNo})</div>
+                    <DocPreview state={docFor('invoice')} />
+                  </div>
+                  <div className="office-doc-slot slot-agreement">
+                    <div className="office-doc-label">
+                      Document 2 of 2 — Agreement + Invoice ({docFor('agreement').docNo})
+                    </div>
+                    <DocPreview state={docFor('agreement')} />
+                  </div>
+                </div>
+              ) : (
+                <DocPreview state={state} />
+              )}
             </div>
             <div className="office-drawer-foot">
               <label className="office-confirm">

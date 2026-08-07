@@ -217,9 +217,20 @@ body.office-mode {
   }
 }
 
-.office-doc-tabs {
-  display: inline-flex;
-  gap: 0.4rem;
+.office-doc-slot + .office-doc-slot {
+  margin-top: 2.2rem;
+}
+
+.office-doc-label {
+  margin: 0 auto 0.6rem;
+  width: 210mm;
+  max-width: 100%;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .office-drawer-head {
@@ -529,6 +540,16 @@ body.office-mode {
     padding: 0; /* the frame cells carry the page margins */
     box-shadow: none;
     font-size: 11pt;
+  }
+
+  /* on /agreement both docs are previewed; only the chosen one prints */
+  .office-doc-label {
+    display: none !important;
+  }
+
+  .print-invoice .slot-agreement,
+  .print-agreement .slot-invoice {
+    display: none !important;
   }
 
   /* a section that would split across pages moves whole to the next page */
