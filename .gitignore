@@ -2,3 +2,7 @@ node_modules
 dist
 *.local
 .DS_Store
+
+# local deal notes and generated sample docs — keep out of the repo
+quotations/
+brand/sample-agreement-50k.pdf

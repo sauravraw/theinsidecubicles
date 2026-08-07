@@ -4,7 +4,7 @@
 // expires (or if tampered with), the login page is shown again.
 
 export const config = {
-  matcher: ['/invoice', '/quotation', '/office-login', '/office-logout'],
+  matcher: ['/invoice', '/quotation', '/agreement', '/office-login', '/office-logout'],
 }
 
 const SESSION_SECONDS = 24 * 60 * 60 // 24 hours
@@ -26,7 +26,7 @@ async function hmac(data, key) {
 }
 
 function safeNext(value) {
-  return value === '/quotation' ? '/quotation' : '/invoice'
+  return value === '/quotation' || value === '/agreement' ? value : '/invoice'
 }
 
 function getCookie(header, name) {

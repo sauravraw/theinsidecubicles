@@ -27,6 +27,7 @@ export const TERMS = [
       'Financial fraud: using the network for money laundering, unauthorised cryptocurrency mining, or fraudulent transactions in violation of the Prevention of Money Laundering Act, 2002',
       'Harassment and defamation: using the premises or its communication channels for harassment, cyberbullying, sexual harassment (as defined under the POSH Act, 2013), or dissemination of defamatory material',
       'Substance abuse and nuisance: consumption of alcohol, narcotics, or any banned substance on the premises; creating excessive noise or disturbance affecting other Members',
+      'Smoking and vaping: smoking, vaping, or use of tobacco products anywhere on the premises, in line with the Cigarettes and Other Tobacco Products Act, 2003 (COTPA)',
     ],
   },
   {
@@ -39,9 +40,14 @@ export const TERMS = [
   },
   {
     title: '4. Access & Operating Hours',
-    body: [
-      'Day shift: 8:00 AM – 8:00 PM, all week. Night shift: 8:00 PM – 8:00 AM, Monday to Saturday. Access applies to the shift covered by the Member’s plan. Guests are permitted during the Member’s shift hours only, with prior intimation. Management reserves the right to modify operating hours with 7 days’ prior written notice to all active Members.',
+    table: [
+      ['Day Shift', '8:00 AM – 8:00 PM, Monday to Sunday'],
+      ['Night Shift', '8:00 PM – 8:00 AM, Monday to Sunday'],
+      ['Sunday', 'Open — the studio runs all week'],
+      ['Public Holidays', 'Closed (unless otherwise communicated)'],
+      ['Guest / Visitor Hours', 'During the Member’s shift hours only, with prior intimation'],
     ],
+    note: 'Note: Access applies to the shift covered by the Member’s plan. Management reserves the right to modify operating hours with 7 days’ prior written notice to all active Members.',
   },
   {
     title: '5. Legal Consequences & Liability',
@@ -55,7 +61,7 @@ export const TERMS = [
   {
     title: '6. Force Majeure',
     body: [
-      'Neither party shall be liable for any failure or delay in performance due to events beyond its reasonable control, including acts of God, natural disasters, epidemics, fire, flood, earthquake, war, civil unrest, government orders, strikes, or internet and power outages that could not reasonably have been foreseen or prevented. The affected party shall notify the other in writing within 7 days of such an event.',
+      'Neither party shall be liable for any failure or delay in performance due to events beyond its reasonable control, including acts of God, natural disasters, epidemics or pandemics, fire, flood, earthquake, war, terrorism, civil unrest, government orders or restrictions, strikes, lockouts, or internet and power outages that could not reasonably have been foreseen or prevented. The affected party shall notify the other in writing within 7 days of such an event.',
     ],
   },
   {
@@ -69,6 +75,7 @@ export const TERMS = [
   {
     title: '8. Termination & Exit',
     bullets: [
+      'Invoices are payable by their due date. Amounts outstanding beyond a 5-day grace period accrue a late payment fee of 2% per month (24% per annum). If any invoice remains unpaid 15 days after its due date, The Inside Cubicles may suspend access to the premises and services until all dues are cleared; the membership fee continues to accrue during suspension.',
       'Either party may terminate this Agreement with 30 days’ written notice (email or WhatsApp) to the other party.',
       'Upon termination, the Member must vacate the assigned workspace, return any access cards or keys, and clear outstanding dues within 7 working days.',
       'Any deposit shall be refunded within 30 business days after exit, subject to deductions for damages, unpaid dues, or outstanding invoices.',
@@ -85,7 +92,23 @@ export const TERMS = [
     ],
   },
   {
-    title: '10. General Provisions',
+    title: '10. Access Credentials, Seats & Address Use',
+    bullets: [
+      'Access credentials, cards, or keys are issued to the named Member only and are not transferable. Loss must be reported to Management immediately; replacements may be charged.',
+      'Memberships and seats are personal to the Member or team named in this Agreement and may not be shared, sublet, or resold to any third party.',
+      'The Member shall not use the premises address as its registered office, or for any statutory registration (GST, ROC, licences, or similar), without the prior written consent of The Inside Cubicles.',
+    ],
+  },
+  {
+    title: '11. Equipment, Belongings & Damage',
+    bullets: [
+      'Members bring personal equipment and belongings onto the premises at their own risk and are responsible for insuring them; The Inside Cubicles does not insure Member property.',
+      'Members are liable for the cost of repair or replacement of any damage, beyond normal wear and tear, caused to the premises, furniture, or equipment by them or their visitors.',
+      'Food and beverages should be consumed in the pantry area; workspaces must be left in reasonable condition after use.',
+    ],
+  },
+  {
+    title: '12. General Provisions',
     bullets: [
       'Entire agreement: this Agreement constitutes the entire understanding between the parties and supersedes all prior negotiations or representations on its subject matter.',
       'Amendments: The Inside Cubicles may amend these Terms with 15 days’ prior written notice. Continued use of services after the notice period constitutes acceptance.',

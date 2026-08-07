@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { flushSync } from 'react-dom'
 import DocPreview, { computeTotals, fmt } from './DocPreview.jsx'
 import './office.css'
 
@@ -82,6 +83,7 @@ function initialState(docType = 'invoice') {
     items: [blankItem()],
     discountPct: 0,
     gstMode: 'none',
+    invoiceKind: 'commercial',
     sac: '997212',
     nextBilling: '',
     deposit: 'No deposit',
@@ -89,7 +91,7 @@ function initialState(docType = 'invoice') {
     initialTerm: '12 months',
     paymentMethods: 'Bank Transfer (NEFT/RTGS/IMPS), UPI',
     bank: 'Bank details to be updated',
-    lateFee: '2% per week on outstanding amount after due date',
+    lateFee: '2% per month (24% p.a.) on the outstanding amount, after a 5-day grace period from the due date',
   }
 }
 
@@ -120,7 +122,8 @@ function loadWork(key, fallbackType) {
 
 export default function OfficeApp({ mode = 'invoice' }) {
   const baseType = mode === 'quotation' ? 'quotation' : 'invoice'
-  const WORK_KEY = mode === 'quotation' ? 'tic-work-quotation' : 'tic-work-invoice'
+  const WORK_KEY =
+    mode === 'quotation' ? 'tic-work-quotation' : mode === 'agreement' ? 'tic-work-agreement' : 'tic-work-invoice'
   const [state, setState] = useState(() => loadWork(WORK_KEY, baseType) || initialState(baseType))
   const restoredWork = !!localStorage.getItem(WORK_KEY)
 
@@ -153,28 +156,38 @@ export default function OfficeApp({ mode = 'invoice' }) {
       .catch(() => setSheetStatus('Sheet logging unavailable — numbers are manual'))
   }, [])
 
-  const logToSheet = () => {
-    const totals = computeTotals(state)
+  const logToSheet = (doc) => {
+    const totals = computeTotals(doc)
     fetch('/api/invoice-log', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        docNo: state.docNo,
-        docType: state.docType,
-        entity: state.entity,
-        contact: state.contact,
-        phone: state.phone,
-        email: state.email,
+        docNo: doc.docNo,
+        docType: doc.docType,
+        entity: doc.entity,
+        contact: doc.contact,
+        phone: doc.phone,
+        email: doc.email,
         total: Math.round(totals.total * 100) / 100,
-        gstMode: state.gstMode,
-        startDate: state.startDate,
-        endDate: state.endDate,
+        gstMode: doc.gstMode,
+        startDate: doc.startDate,
+        endDate: doc.endDate,
       }),
     }).catch(() => {})
   }
 
-  const downloadPdf = () => {
-    logToSheet()
+  // On /agreement one form produces two PDFs: the plain invoice (TICI number)
+  // and the combined agreement + invoice (same serial, TICSA prefix).
+  const [printDoc, setPrintDoc] = useState('invoice')
+  const docFor = (kind) =>
+    mode === 'agreement' && kind === 'agreement'
+      ? { ...state, docType: 'agreement', docNo: state.docNo.replace(/^TICI/, 'TICSA') }
+      : state
+
+  const downloadPdf = (kind) => {
+    const doc = docFor(kind)
+    flushSync(() => setPrintDoc(kind)) // the printed DOM must match the chosen document
+    logToSheet(doc)
     window.print()
   }
 
@@ -184,7 +197,12 @@ export default function OfficeApp({ mode = 'invoice' }) {
   }
 
   useEffect(() => {
-    document.title = mode === 'quotation' ? 'Quotation — The Inside Cubicles' : 'Office — The Inside Cubicles'
+    document.title =
+      mode === 'quotation'
+        ? 'Quotation — The Inside Cubicles'
+        : mode === 'agreement'
+          ? 'Agreement — The Inside Cubicles'
+          : 'Office — The Inside Cubicles'
     const meta = document.createElement('meta')
     meta.name = 'robots'
     meta.content = 'noindex, nofollow'
@@ -236,6 +254,14 @@ export default function OfficeApp({ mode = 'invoice' }) {
       ...s,
       docType,
       docNo: s.docNo.replace(/^TIC(SA|S|Q|I)/, DOC_PREFIX[docType]),
+    }))
+
+  // Commercial invoice never charges GST; switching to Tax turns the breakup on.
+  const setInvoiceKind = (kind) =>
+    setState((s) => ({
+      ...s,
+      invoiceKind: kind,
+      gstMode: kind === 'commercial' ? 'none' : s.gstMode === 'none' ? 'intra' : s.gstMode,
     }))
 
   // phone: digits only, max 10 — a plain field, no number spinners
@@ -301,11 +327,16 @@ export default function OfficeApp({ mode = 'invoice' }) {
   }
 
   const totals = computeTotals(state)
+  // Older saved drafts have no invoiceKind — infer it from the GST mode.
+  const invoiceKind = state.invoiceKind ?? (state.gstMode === 'none' ? 'commercial' : 'tax')
+  const isCommercialInvoice = state.docType === 'invoice' && invoiceKind === 'commercial'
 
   return (
     <div className="office">
       <header className="office-top">
-        <span className="office-brand">The Inside Cubicles — {mode === 'quotation' ? 'Quotation' : 'Office'}</span>
+        <span className="office-brand">
+          The Inside Cubicles — {mode === 'quotation' ? 'Quotation' : mode === 'agreement' ? 'Agreement' : 'Office'}
+        </span>
         <span className="office-hint">
           Fill the form, then open the preview to check every detail and download the PDF.
           {sheetStatus ? ` · ${sheetStatus}` : ''}
@@ -319,13 +350,22 @@ export default function OfficeApp({ mode = 'invoice' }) {
         <form className="office-form" onSubmit={(e) => e.preventDefault()}>
           <fieldset>
             <legend>Document</legend>
-            {mode !== 'quotation' && (
+            {mode === 'invoice' && (
               <label>
                 Type
                 <select value={state.docType} onChange={(e) => setDocType(e.target.value)}>
                   <option value="invoice">Invoice</option>
                   <option value="agreement">Service Agreement + Invoice</option>
                   <option value="service">Service Agreement only</option>
+                </select>
+              </label>
+            )}
+            {mode !== 'quotation' && state.docType === 'invoice' && (
+              <label>
+                Invoice type
+                <select value={invoiceKind} onChange={(e) => setInvoiceKind(e.target.value)}>
+                  <option value="commercial">Commercial Invoice (no GST)</option>
+                  <option value="tax">Tax Invoice (with GST)</option>
                 </select>
               </label>
             )}
@@ -449,14 +489,18 @@ export default function OfficeApp({ mode = 'invoice' }) {
               Discount %
               <input type="number" min="0" max="100" value={state.discountPct} onChange={upd('discountPct')} />
             </label>
-            <label>
-              GST
-              <select value={state.gstMode} onChange={upd('gstMode')}>
-                <option value="none">No GST lines (registration in process)</option>
-                <option value="intra">Show SGST + CGST breakup (Maharashtra)</option>
-                <option value="inter">Show IGST breakup (other states)</option>
-              </select>
-            </label>
+            {!isCommercialInvoice && (
+              <label>
+                GST
+                <select value={state.gstMode} onChange={upd('gstMode')}>
+                  {state.docType !== 'invoice' && (
+                    <option value="none">No GST lines (registration in process)</option>
+                  )}
+                  <option value="intra">Show SGST + CGST breakup (Maharashtra)</option>
+                  <option value="inter">Show IGST breakup (other states)</option>
+                </select>
+              </label>
+            )}
             <label>
               Our GSTIN
               <input value={state.ourGstin} onChange={upd('ourGstin')} placeholder="Fill once registered" />
@@ -553,13 +597,31 @@ export default function OfficeApp({ mode = 'invoice' }) {
           <div className="office-drawer-backdrop" onClick={() => setPreviewOpen(false)} />
           <div className="office-drawer-panel">
             <div className="office-drawer-head">
-              <span>Preview — {state.docNo}</span>
+              <span>Preview — {docFor(printDoc).docNo}</span>
+              {mode === 'agreement' && (
+                <span className="office-doc-tabs">
+                  <button
+                    className={`office-btn ${printDoc === 'invoice' ? 'primary' : ''}`}
+                    type="button"
+                    onClick={() => setPrintDoc('invoice')}
+                  >
+                    Invoice
+                  </button>
+                  <button
+                    className={`office-btn ${printDoc === 'agreement' ? 'primary' : ''}`}
+                    type="button"
+                    onClick={() => setPrintDoc('agreement')}
+                  >
+                    Agreement + Invoice
+                  </button>
+                </span>
+              )}
               <button className="office-btn" type="button" onClick={() => setPreviewOpen(false)}>
                 × Close
               </button>
             </div>
             <div className="office-drawer-body">
-              <DocPreview state={state} />
+              <DocPreview state={docFor(printDoc)} />
             </div>
             <div className="office-drawer-foot">
               <label className="office-confirm">
@@ -570,14 +632,35 @@ export default function OfficeApp({ mode = 'invoice' }) {
                 />
                 I have checked every detail — customer, amounts, dates — and confirm it is correct.
               </label>
-              <button
-                className="office-btn primary"
-                type="button"
-                disabled={!confirmed}
-                onClick={downloadPdf}
-              >
-                Download PDF
-              </button>
+              {mode === 'agreement' ? (
+                <>
+                  <button
+                    className="office-btn primary"
+                    type="button"
+                    disabled={!confirmed}
+                    onClick={() => downloadPdf('invoice')}
+                  >
+                    Download Invoice PDF
+                  </button>
+                  <button
+                    className="office-btn primary"
+                    type="button"
+                    disabled={!confirmed}
+                    onClick={() => downloadPdf('agreement')}
+                  >
+                    Download Agreement + Invoice PDF
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="office-btn primary"
+                  type="button"
+                  disabled={!confirmed}
+                  onClick={() => downloadPdf('invoice')}
+                >
+                  Download PDF
+                </button>
+              )}
             </div>
           </div>
         </div>

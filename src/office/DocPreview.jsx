@@ -46,10 +46,21 @@ function Brand() {
   )
 }
 
+// Bolds the lead-in of a bullet ("Cyber-malpractice: …"), coWORX-style.
+function TermLead({ text }) {
+  const i = text.indexOf(':')
+  if (i < 1 || i > 60) return text
+  return (
+    <>
+      <strong>{text.slice(0, i + 1)}</strong>
+      {text.slice(i + 1)}
+    </>
+  )
+}
+
 function DocHeader({ state, title }) {
   return (
     <>
-      <Brand />
       <div className="doc-company">
         <h1>{COMPANY.name}</h1>
         <p>{COMPANY.address}</p>
@@ -196,7 +207,7 @@ function BillingTable({ state }) {
     ...(state.docType === 'agreement' || state.docType === 'service' ? [['Late Payment Fee', state.lateFee]] : []),
   ]
   return (
-    <>
+    <div className="doc-block">
       <h2 className="doc-section">Billing &amp; Security Deposit</h2>
       <table className="doc-table">
         <thead>
@@ -214,7 +225,7 @@ function BillingTable({ state }) {
           ))}
         </tbody>
       </table>
-    </>
+    </div>
   )
 }
 
@@ -242,21 +253,39 @@ function DocFooter() {
   return <p className="doc-footer">Confidential — The Inside Cubicles · www.theinsidecubicles.com</p>
 }
 
-export default function DocPreview({ state }) {
+export default function DocPreview({ state: rawState }) {
+  const isService = rawState.docType === 'service'
+  const isQuotation = rawState.docType === 'quotation'
+  const withTerms = rawState.docType === 'agreement' || isService
+  // Commercial invoices never carry GST, even if a stale draft has a GST mode set.
+  const invoiceKind = rawState.invoiceKind ?? (rawState.gstMode === 'none' ? 'commercial' : 'tax')
+  const isCommercial = rawState.docType === 'invoice' && invoiceKind === 'commercial'
+  const state = isCommercial ? { ...rawState, gstMode: 'none' } : rawState
   const totals = computeTotals(state)
-  const isService = state.docType === 'service'
-  const isQuotation = state.docType === 'quotation'
-  const withTerms = state.docType === 'agreement' || isService
   const title = isQuotation
     ? 'QUOTATION'
     : isService
       ? 'SERVICE AGREEMENT'
       : state.docType === 'agreement'
         ? 'SERVICE AGREEMENT & MEMBERSHIP INVOICE'
-        : 'INVOICE'
+        : isCommercial
+          ? 'COMMERCIAL INVOICE'
+          : 'TAX INVOICE'
 
   return (
     <div className="doc">
+      {/* The table frame repeats its header row on every printed page. */}
+      <table className="doc-frame">
+        <thead>
+          <tr>
+            <td className="doc-frame-head">
+              <Brand />
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td className="doc-frame-body">
       <DocHeader state={state} title={title} />
       <CustomerTable state={state} />
       {!isService && <ItemsTable state={state} totals={totals} />}
@@ -278,10 +307,31 @@ export default function DocPreview({ state }) {
               {(section.body || []).map((p) => (
                 <p key={p}>{p}</p>
               ))}
+              {section.table && (
+                <table className="doc-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: '36%' }}>Parameter</th>
+                      <th>Details</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {section.table.map(([param, details]) => (
+                      <tr key={param}>
+                        <td>{param}</td>
+                        <td>{details}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+              {section.note && <p className="doc-note">{section.note}</p>}
               {section.bullets && (
                 <ul>
                   {section.bullets.map((b) => (
-                    <li key={b}>{b}</li>
+                    <li key={b}>
+                      <TermLead text={b} />
+                    </li>
                   ))}
                 </ul>
               )}
@@ -302,7 +352,17 @@ export default function DocPreview({ state }) {
       )}
 
       <Signatures state={state} />
-      <DocFooter />
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td className="doc-frame-foot">
+              <DocFooter />
+            </td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
   )
 }
