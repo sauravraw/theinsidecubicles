@@ -90,7 +90,7 @@ function initialState(docType = 'invoice') {
     notice: '30 days written notice',
     initialTerm: '12 months',
     paymentMethods: 'Bank Transfer (NEFT/RTGS/IMPS), UPI',
-    bank: 'Bank details to be updated',
+    bank: 'Utkarsh Singh\nBank Name: HDFC Bank LTD\nBranch: Dahisar West - Kanderpada\nAccount Number: 50100163773282\nIFSC: HDFC0001230',
     lateFee: '2% per month (24% p.a.) on the outstanding amount, after a 5-day grace period from the due date',
   }
 }
@@ -505,10 +505,12 @@ export default function OfficeApp({ mode = 'invoice' }) {
               Our GSTIN
               <input value={state.ourGstin} onChange={upd('ourGstin')} placeholder="Fill once registered" />
             </label>
-            <label>
-              SAC code
-              <input value={state.sac} onChange={upd('sac')} placeholder="997212 for coworking rental" />
-            </label>
+            {!isCommercialInvoice && (
+              <label>
+                SAC code
+                <input value={state.sac} onChange={upd('sac')} placeholder="997212 for coworking rental" />
+              </label>
+            )}
             <p className="office-total">Total: ₹ {fmt(totals.total)}</p>
           </fieldset>
           </>)}

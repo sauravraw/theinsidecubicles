@@ -205,7 +205,7 @@ export const CONTACT = {
   ],
   phone: '+91 79774 48516',
   whatsapp: 'https://wa.me/917977448516',
-  email: 'theinsidecubicles@gmail.com',
+  email: 'bookings@theinsidecubicles.com',
   coords: '19.4682917,72.8045583',
   enquiryForm: 'https://forms.gle/4LL7u88AMhHYaeX1A',
   nearby: ['Pizza Hut', "McDonald's", 'cafés & street food'],

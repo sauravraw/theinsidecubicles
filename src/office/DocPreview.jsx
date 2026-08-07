@@ -3,7 +3,9 @@ import { TERMS } from './terms.js'
 const COMPANY = {
   name: 'The Inside Cubicles',
   address: 'F44, First Floor, Cosmos Square, Rustomjee Global City, HDIL, Vasai-Virar, Maharashtra 401303',
-  email: 'theinsidecubicles@gmail.com',
+  // agreements + invoices print bookings@; quotations print info@
+  email: 'bookings@theinsidecubicles.com',
+  quotationEmail: 'info@theinsidecubicles.com',
   phone: '+91 79774 48516',
 }
 
@@ -65,7 +67,7 @@ function DocHeader({ state, title }) {
         <h1>{COMPANY.name}</h1>
         <p>{COMPANY.address}</p>
         <p>
-          {COMPANY.email} · {COMPANY.phone}
+          {state.docType === 'quotation' ? COMPANY.quotationEmail : COMPANY.email} · {COMPANY.phone}
         </p>
         {state.ourGstin && <p className="doc-gstin">GSTIN: {state.ourGstin}</p>}
       </div>
@@ -204,7 +206,7 @@ function BillingTable({ state }) {
     ...(state.docType === 'agreement' || state.docType === 'service' ? [['Initial Term Length', state.initialTerm]] : []),
     ['Accepted Payment Methods', state.paymentMethods],
     ['Bank Details', state.bank],
-    ...(state.docType === 'agreement' || state.docType === 'service' ? [['Late Payment Fee', state.lateFee]] : []),
+    ['Late Payment Fee', state.lateFee],
   ]
   return (
     <div className="doc-block">
@@ -257,10 +259,11 @@ export default function DocPreview({ state: rawState }) {
   const isService = rawState.docType === 'service'
   const isQuotation = rawState.docType === 'quotation'
   const withTerms = rawState.docType === 'agreement' || isService
-  // Commercial invoices never carry GST, even if a stale draft has a GST mode set.
+  // Commercial invoices never carry GST — nor the SAC column, which is a GST
+  // classification code — even if a stale draft has them set.
   const invoiceKind = rawState.invoiceKind ?? (rawState.gstMode === 'none' ? 'commercial' : 'tax')
   const isCommercial = rawState.docType === 'invoice' && invoiceKind === 'commercial'
-  const state = isCommercial ? { ...rawState, gstMode: 'none' } : rawState
+  const state = isCommercial ? { ...rawState, gstMode: 'none', sac: '' } : rawState
   const totals = computeTotals(state)
   const title = isQuotation
     ? 'QUOTATION'
