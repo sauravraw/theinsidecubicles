@@ -459,13 +459,50 @@ body.office-mode {
 }
 
 .sign-line {
-  margin: 0 0 2.2rem;
+  margin: 0 0 0.3rem;
   font-weight: 600;
+}
+
+/* fixed-height signing area: holds the uploaded signature, or stays blank
+   for a handwritten one — both sides line up either way */
+.sign-slot {
+  height: 16mm;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 .sign-rule {
   border-bottom: 1px solid #16283c;
   margin-bottom: 0.4rem;
+}
+
+/* uploaded signature image: centered, floating just above the line */
+.sign-img {
+  display: block;
+  max-height: 15mm;
+  max-width: min(85mm, 100%); /* the full signature line */
+  width: auto;
+  object-fit: contain;
+  object-position: center bottom;
+  margin-bottom: 1.2mm;
+}
+
+/* form-side thumbnail of an uploaded signature */
+.office-sign-thumb {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.office-sign-thumb img {
+  height: 2.4rem;
+  max-width: 9rem;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid rgba(22, 40, 60, 0.25);
+  border-radius: 4px;
+  padding: 2px 6px;
 }
 
 .doc-signs p {

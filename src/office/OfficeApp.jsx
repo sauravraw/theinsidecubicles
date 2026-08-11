@@ -110,6 +110,7 @@ function initialState(docType = 'invoice') {
     endDate: docType === 'quotation' ? addDays(todayISO, 15) : addMonthsInclusive(todayISO, 1),
     ourGstin: '',
     ourSignatory: '',
+    ourSignImage: '',
     entity: '',
     contact: '',
     email: '',
@@ -303,6 +304,29 @@ export default function OfficeApp({ mode = 'invoice' }) {
   // phone: digits only, max 10 — a plain field, no number spinners
   const updPhone = (e) =>
     setState((s) => ({ ...s, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }))
+
+  // signature images: downscaled to keep the autosaved state small
+  const updSignImage = (key) => (e) => {
+    const file = e.target.files && e.target.files[0]
+    e.target.value = '' // allow picking the same file again later
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const img = new Image()
+      img.onload = () => {
+        const scale = Math.min(1, 600 / img.width)
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.round(img.width * scale)
+        canvas.height = Math.round(img.height * scale)
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+        setState((s) => ({ ...s, [key]: canvas.toDataURL('image/png') }))
+      }
+      img.src = reader.result
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const clearSignImage = (key) => () => setState((s) => ({ ...s, [key]: '' }))
 
   // Date rules: start date >= document date, end date >= start date.
   const updDate = (e) => {
@@ -612,6 +636,19 @@ export default function OfficeApp({ mode = 'invoice' }) {
             <label>
               Our signatory
               <input value={state.ourSignatory} onChange={upd('ourSignatory')} placeholder="Name" />
+            </label>
+            <label>
+              Our signature (optional)
+              {state.ourSignImage ? (
+                <span className="office-sign-thumb">
+                  <img src={state.ourSignImage} alt="Our signature" />
+                  <button type="button" className="office-btn" onClick={clearSignImage('ourSignImage')}>
+                    × Remove
+                  </button>
+                </span>
+              ) : (
+                <input type="file" accept="image/*" onChange={updSignImage('ourSignImage')} />
+              )}
             </label>
           </fieldset>
 

@@ -242,12 +242,16 @@ function Signatures({ state }) {
       <div>
         <h3>For The Inside Cubicles</h3>
         <p className="sign-line">Authorised Signatory:</p>
+        <div className="sign-slot">
+          {state.ourSignImage && <img className="sign-img" src={state.ourSignImage} alt="Signature" />}
+        </div>
         <div className="sign-rule" />
         <p>Name: {state.ourSignatory || '____________________'}</p>
       </div>
       <div>
         <h3>{state.docType === 'quotation' ? 'Accepted by (Member / Entity)' : 'For the Member / Entity'}</h3>
         <p className="sign-line">Authorised Signatory:</p>
+        <div className="sign-slot" />
         <div className="sign-rule" />
         <p>Name: {state.contact}</p>
         <p>Company: {state.entity}</p>
