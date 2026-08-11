@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import DocPreview, { computeTotals, fmt } from './DocPreview.jsx'
+import ourSignDefault from '../../brand/sign.png'
 import './office.css'
 
 const today = new Date()
@@ -110,7 +111,7 @@ function initialState(docType = 'invoice') {
     endDate: docType === 'quotation' ? addDays(todayISO, 15) : addMonthsInclusive(todayISO, 1),
     ourGstin: '',
     ourSignatory: '',
-    ourSignImage: '',
+    ourSignImage: ourSignDefault,
     entity: '',
     contact: '',
     email: '',
