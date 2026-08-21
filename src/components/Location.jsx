@@ -54,6 +54,10 @@ export default function Location() {
             {CONTACT.nearby.join(' · ')} — all a short walk from the door.
           </p>
         </div>
+        <div className="loc-nearby">
+          <p className="loc-nearby-head">Easy to reach</p>
+          <p className="loc-nearby-list">{CONTACT.reach}</p>
+        </div>
         <p className="loc-lines">
           <a href={`tel:${CONTACT.phone.replace(/ /g, '')}`}>{CONTACT.phone}</a>
           <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>

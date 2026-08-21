@@ -201,7 +201,7 @@ export const CONTACT = {
   address: [
     'F44, First Floor, Cosmos Square',
     'Rustomjee Global City, HDIL',
-    'Vasai-Virar, Maharashtra 401303',
+    'Virar West, Vasai-Virar, Maharashtra 401303',
   ],
   phone: '+91 79774 48516',
   whatsapp: 'https://wa.me/917977448516',
@@ -212,6 +212,8 @@ export const CONTACT = {
     'The Inside Cubicles, First Floor, Cosmos Square, F44, Rustomjee Global City, Virar West, Vasai-Virar, Maharashtra 401303',
   enquiryForm: 'https://forms.gle/4LL7u88AMhHYaeX1A',
   nearby: ['Pizza Hut', "McDonald's", 'cafés & street food'],
+  reach:
+    'A short ride from Virar railway station — easy to reach from Virar East, Nallasopara East & West, Naigaon and Vasai, with direct Western-line connectivity toward Mumbai.',
   hours: [
     { days: 'Day shift', time: '8:00 – 20:00 · all week' },
     { days: 'Night shift', time: '20:00 – 8:00 · Mon – Sat' },

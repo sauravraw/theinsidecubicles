@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="footer-brand">
           <p className="footer-name">The Inside Cubicles</p>
           <p className="footer-blurb">
-            A coworking studio in Rustomjee Global City, Vasai-Virar, for people who take their
+            A coworking studio in Rustomjee Global City, Virar West, Vasai-Virar, for people who take their
             work seriously and their office lightly.
           </p>
         </div>
