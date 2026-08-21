@@ -8,7 +8,7 @@ export const NAV_LINKS = [
 
 export const OFFER = {
   totalSpots: 20,
-  spotsTaken: 7,
+  spotsTaken: 9,
 }
 
 export const AMENITIES = [
@@ -63,7 +63,7 @@ export const SHIFTS = {
     label: 'Night shift',
     time: '20:00 – 8:00',
     blurb:
-      'For night owls and US-timezone teams — on-site security, coffee till sunrise.',
+      'Night shift is full — only a conference room remains. Ask about the waitlist, or grab a day seat while they last.',
   },
 }
 
@@ -206,7 +206,10 @@ export const CONTACT = {
   phone: '+91 79774 48516',
   whatsapp: 'https://wa.me/917977448516',
   email: 'enquiry@theinsidecubicles.com',
-  coords: '19.4682917,72.8045583',
+  coords: '19.46868,72.8043474', // Google Business Profile pin
+  // named place query — links open the actual Maps listing (with reviews), not a bare pin
+  mapsQuery:
+    'The Inside Cubicles, First Floor, Cosmos Square, F44, Rustomjee Global City, Virar West, Vasai-Virar, Maharashtra 401303',
   enquiryForm: 'https://forms.gle/4LL7u88AMhHYaeX1A',
   nearby: ['Pizza Hut', "McDonald's", 'cafés & street food'],
   hours: [

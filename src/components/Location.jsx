@@ -7,14 +7,14 @@ function SiteMap() {
       <iframe
         className="loc-embed"
         title="The Inside Cubicles on Google Maps"
-        src={`https://maps.google.com/maps?q=${CONTACT.coords}&z=16&output=embed`}
+        src={`https://maps.google.com/maps?q=${encodeURIComponent(CONTACT.mapsQuery)}&z=16&output=embed`}
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
         allowFullScreen
       />
       <a
         className="loc-directions"
-        href={`https://www.google.com/maps/dir/?api=1&destination=${CONTACT.coords}`}
+        href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(CONTACT.mapsQuery)}`}
         target="_blank"
         rel="noreferrer"
       >
