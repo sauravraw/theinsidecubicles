@@ -216,6 +216,6 @@ export const CONTACT = {
     'A short ride from Virar railway station — easy to reach from Virar East, Nallasopara East & West, Naigaon and Vasai, with direct Western-line connectivity toward Mumbai.',
   hours: [
     { days: 'Day shift', time: '8:00 – 20:00 · all week' },
-    { days: 'Night shift', time: '20:00 – 8:00 · Mon – Sat' },
+    { days: 'Night shift', time: '20:00 – 8:00 · all week' },
   ],
 }
