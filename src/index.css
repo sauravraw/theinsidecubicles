@@ -1288,11 +1288,45 @@ a {
   padding: 0.75rem;
 }
 
+.loc-frame {
+  position: relative;
+}
+
 .loc-embed {
   display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
   border: 1px solid var(--line);
+}
+
+/* annotation chip floating above the Google pin (map centre) */
+.loc-here {
+  position: absolute;
+  left: 50%;
+  bottom: calc(50% + 16px);
+  transform: translateX(-50%);
+  z-index: 2;
+  pointer-events: none;
+  padding: 0.3rem 0.65rem;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.loc-here::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-top-color: var(--accent);
 }
 
 .loc-directions {

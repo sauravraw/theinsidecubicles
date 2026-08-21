@@ -4,14 +4,19 @@ import { CONTACT } from '../data.js'
 function SiteMap() {
   return (
     <div className="loc-map">
-      <iframe
-        className="loc-embed"
-        title="The Inside Cubicles on Google Maps"
-        src={`https://maps.google.com/maps?q=${encodeURIComponent(CONTACT.mapsQuery)}&z=16&output=embed`}
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-        allowFullScreen
-      />
+      <div className="loc-frame">
+        <span className="loc-here" aria-hidden="true">
+          We are here
+        </span>
+        <iframe
+          className="loc-embed"
+          title="The Inside Cubicles on Google Maps"
+          src={`https://maps.google.com/maps?q=${CONTACT.coords}(${encodeURIComponent('The Inside Cubicles')})&z=18&output=embed`}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          allowFullScreen
+        />
+      </div>
       <a
         className="loc-directions"
         href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(CONTACT.mapsQuery)}`}
