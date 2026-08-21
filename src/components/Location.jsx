@@ -1,14 +1,29 @@
+import { useEffect, useRef, useState } from 'react'
 import Reveal from './Reveal.jsx'
 import { CONTACT } from '../data.js'
 
 function SiteMap() {
+  const frame = useRef(null)
+  const [touched, setTouched] = useState(false)
+
+  // the chip points at the map centre, which is only true until the visitor
+  // pans — the iframe is sealed, so we fade the chip on first interaction
+  useEffect(() => {
+    const onBlur = () => {
+      if (document.activeElement === frame.current) setTouched(true)
+    }
+    window.addEventListener('blur', onBlur)
+    return () => window.removeEventListener('blur', onBlur)
+  }, [])
+
   return (
     <div className="loc-map">
       <div className="loc-frame">
-        <span className="loc-here" aria-hidden="true">
+        <span className={`loc-here${touched ? ' is-hidden' : ''}`} aria-hidden="true">
           We are here
         </span>
         <iframe
+          ref={frame}
           className="loc-embed"
           title="The Inside Cubicles on Google Maps"
           src={`https://maps.google.com/maps?q=${CONTACT.coords}(${encodeURIComponent('The Inside Cubicles')})&z=18&output=embed`}
